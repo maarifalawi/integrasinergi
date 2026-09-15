@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { ArrowLeft, ArrowRight, X } from "@phosphor-icons/react";
 import { z } from "@/lib/z";
 import { galleryPhotos } from "@/data/gallery";
@@ -83,7 +84,7 @@ export function FieldLightbox({
             initial={reduce ? false : { opacity: 0, backdropFilter: "blur(0px)" }}
             animate={{ opacity: 1, backdropFilter: "blur(12px)" }}
             exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
-            transition={{ duration: 0.32, ease: EASE }}
+            transition={{ duration: reduce ? 0 : 0.32, ease: EASE }}
           />
 
           <motion.div
@@ -94,7 +95,7 @@ export function FieldLightbox({
             initial={reduce ? false : { opacity: 0, y: 18, scale: 0.99 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.995 }}
-            transition={{ duration: 0.42, ease: EASE }}
+            transition={{ duration: reduce ? 0 : 0.42, ease: EASE }}
           >
             {/* keyed on the frame, so stepping through the set crossfades
                 instead of snapping between two unrelated images. */}
@@ -105,7 +106,7 @@ export function FieldLightbox({
                 initial={reduce ? false : { opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.24, ease: EASE }}
+                transition={{ duration: reduce ? 0 : 0.24, ease: EASE }}
               >
                 <img
                   src={photo.src}
@@ -113,15 +114,10 @@ export function FieldLightbox({
                   height={PHOTO_HEIGHT}
                   alt={photo.alt}
                   decoding="async"
-                  className="max-h-[68svh] w-auto rounded-[var(--radius-card)] object-contain"
+                  className="max-h-[62svh] w-auto rounded-[var(--radius-card)] object-contain"
                 />
-                <figcaption className="mt-5 text-center">
-                  <p className="text-foreground-on-dark text-[1.0625rem] leading-[1.24] font-semibold tracking-[-0.022em]">
-                    {photo.title}
-                  </p>
-                  <p className="text-muted-foreground-on-dark mt-1 font-mono text-[11px] tracking-[0.1em] uppercase">
-                    {photo.meta}
-                  </p>
+                <figcaption className="text-muted-foreground-on-dark mt-4 text-center font-mono text-xs leading-relaxed tracking-[0.04em]">
+                  {photo.meta}
                 </figcaption>
               </motion.figure>
             </AnimatePresence>

@@ -1,4 +1,5 @@
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "@phosphor-icons/react";
 import { Reveal } from "@/components/motion/Reveal";
@@ -76,15 +77,16 @@ function Photo({ service, number }: { service: Service; number: string }) {
 }
 
 function Heading({ service, number }: { service: Service; number: string }) {
+  const Title = service.slug === "sea-freight" ? "h1" : "h2";
   return (
     <>
       <p className="text-muted-foreground flex items-center gap-3 font-mono text-[11px] tracking-[0.14em] uppercase">
         <span aria-hidden className="bg-primary h-px w-8" />
         Layanan {number} · {tags[service.slug]}
       </p>
-      <h2 className="text-foreground mt-6 text-[clamp(2rem,4vw,3.25rem)] leading-[1.08] font-semibold tracking-[-0.025em]">
+      <Title className="text-foreground mt-6 text-[clamp(2rem,4vw,3.25rem)] leading-[1.08] font-semibold tracking-[-0.025em]">
         {service.name}
-      </h2>
+      </Title>
       <p className="text-muted-foreground mt-6 max-w-[620px] text-[clamp(1.25rem,2.2vw,1.75rem)] leading-[1.25]">
         {service.description}
       </p>

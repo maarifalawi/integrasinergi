@@ -12,6 +12,7 @@ const description =
 
 export const Route = createFileRoute("/")({
   head: () => ({
+    links: [{ rel: "preload", as: "image", href: "/img/home.png", fetchPriority: "high" }],
     meta: [
       { title },
       { name: "description", content: description },
@@ -24,7 +25,7 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-// Surface sequence: white, dark, parchment, dark, white, photographic.
+// Surface sequence: photographic, dark, parchment, dark, white, photographic.
 function Home() {
   return (
     <>

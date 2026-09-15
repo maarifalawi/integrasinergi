@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { Plus } from "@phosphor-icons/react";
 import { LineReveal } from "@/components/motion/LineReveal";
 import { Reveal } from "@/components/motion/Reveal";
-import { contacts } from "@/data/contacts";
+import { commercialContact } from "@/data/contacts";
 import { headingLines } from "@/data/headings";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -19,7 +20,7 @@ const items = [
   },
   {
     q: "Berapa lama proses penawaran?",
-    a: "Tim commercial merespons pada hari kerja yang sama setelah detail kargo, rute, dan jadwal kami terima.",
+    a: "Waktu penyusunan penawaran bergantung pada rincian kargo, rute, dan ketersediaan layanan. Hubungi Commercial Dept. untuk tindak lanjut permintaan Anda.",
   },
   {
     q: "Apakah ISLI melayani pengiriman domestik antar pulau?",
@@ -27,7 +28,7 @@ const items = [
   },
 ];
 
-const email = contacts[0]!.email;
+const email = commercialContact.email;
 
 // Sub-768px fallback: one column already, only the gutters tighten.
 export function Faq() {

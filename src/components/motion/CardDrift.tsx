@@ -1,4 +1,5 @@
-import { motion, useReducedMotion, useSpring, useTransform, type MotionValue } from "motion/react";
+import { motion, useSpring, useTransform, type MotionValue } from "motion/react";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useEffect, useState, type ReactNode } from "react";
 
 /**

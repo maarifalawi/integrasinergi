@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, X } from "@phosphor-icons/react";
 import { z } from "@/lib/z";
-import { contacts, office } from "@/data/contacts";
+import { salesContact, office, whatsappHref } from "@/data/contacts";
 
 export type NavLink = { label: string; to: string };
 
@@ -31,7 +31,7 @@ export function MobileSheet({
 
   if (!open) return null;
 
-  const hotline = contacts[0]!;
+  const hotline = salesContact;
 
   return (
     <div
@@ -96,18 +96,31 @@ export function MobileSheet({
         >
           Minta Penawaran
         </Link>
-        <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-2">
+        <p className="text-foreground-on-dark mt-6 text-[0.875rem]">Sales Dept. · {hotline.name}</p>
+        <div className="mt-2 flex flex-wrap items-center gap-x-8 gap-y-2">
           <a
             href={`mailto:${hotline.email}`}
             className="text-foreground-on-dark flex min-h-[44px] items-center text-[0.9375rem] leading-[1.43] tracking-[-0.016em]"
             children="Email"
           />
-          <a
-            href={`tel:${hotline.phone.replace(/[\s-]/g, "")}`}
-            className="text-muted-foreground-on-dark flex min-h-[44px] items-center font-mono text-[0.8125rem] tracking-[0.02em] tabular-nums"
+          {hotline.whatsapp && (
+            <a
+              href={whatsappHref(hotline.whatsapp)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground-on-dark flex min-h-[44px] items-center font-mono text-[0.8125rem] tracking-[0.02em] tabular-nums"
+            >
+              WhatsApp
+            </a>
+          )}
+          <Link
+            to="/kontak"
+            hash="tim-kontak"
+            onClick={onClose}
+            className="text-foreground-on-dark inline-flex min-h-[44px] items-center text-[0.875rem]"
           >
-            {hotline.phone}
-          </a>
+            Semua kontak
+          </Link>
         </div>
         <p className="mt-3 font-mono text-[11px] tracking-[0.08em] text-white/40 uppercase">
           {office.line1} &middot; {office.line2}

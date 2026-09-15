@@ -8,7 +8,7 @@ import { ClosingBand } from "@/components/home/ClosingBand";
 
 const title = "Kontak ISLI, Minta Penawaran Pengiriman Kargo";
 const description =
-  "Kirim rute, jenis barang, volume, dan jadwal. Tim commercial ISLI di Bekasi menyiapkan penawaran pada hari kerja yang sama.";
+  "Hubungi Sales Dept., Manajer Operasional, atau Commercial Dept. ISLI. Sampaikan rute, jenis barang, volume, dan jadwal untuk permintaan penawaran.";
 
 export const Route = createFileRoute("/kontak")({
   head: () => ({

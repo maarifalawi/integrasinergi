@@ -1,4 +1,5 @@
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { LineReveal } from "@/components/motion/LineReveal";
 import { Button } from "@/components/ui/Button";
 import { headingLines } from "@/data/headings";
@@ -10,7 +11,7 @@ export function AboutHero() {
   const reduce = useReducedMotion();
   const up = (delay: number) =>
     reduce
-      ? {}
+      ? { initial: false as const, animate: { opacity: 1, y: 0 }, transition: { duration: 0 } }
       : {
           initial: { opacity: 0, y: 20 },
           animate: { opacity: 1, y: 0 },
@@ -40,8 +41,7 @@ export function AboutHero() {
             className="text-muted-foreground mt-8 max-w-[620px] text-[clamp(1.25rem,2.2vw,1.75rem)] leading-[1.25]"
             {...up(0.45)}
           >
-            Forwarding laut, udara, dan domestik untuk kargo Indonesia, dengan kontainer SOC dan
-            visibilitas penuh di setiap leg.
+            Forwarding laut, udara, dan domestik untuk kargo Indonesia
           </motion.p>
           <div className="mt-12 flex flex-wrap items-center gap-4">
             <motion.div {...up(0.65)}>

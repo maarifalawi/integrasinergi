@@ -3,9 +3,9 @@ export type GalleryPhoto = {
   src: string;
   /** what is in the frame, read out by screen readers in the viewer */
   alt: string;
-  /** short label under the frame and in the viewer caption */
+  /** accessible name for the enlarge-photo button; not a visible caption */
   title: string;
-  /** mono metadata line: the activity and the service line it belongs to */
+  /** visible caption: the activity and service line or shift */
   meta: string;
 };
 

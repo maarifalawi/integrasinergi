@@ -1,6 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ServicesHero } from "@/components/services/ServicesHero";
-import { AlurOperasional } from "@/components/services/AlurOperasional";
 import { SeaFreightBlock, AirFreightBlock, InlandBlock } from "@/components/services/ServiceBlocks";
 import { PartnerStrip } from "@/components/services/PartnerStrip";
 import { CoverageSection } from "@/components/map/CoverageSection";
@@ -24,13 +22,10 @@ export const Route = createFileRoute("/layanan")({
   component: Services,
 });
 
-// Surface sequence: white, parchment, white, parchment, white, pearl,
-// dark, photographic.
+// Start directly with the service catalogue; no introductory sections.
 function Services() {
   return (
     <>
-      <ServicesHero />
-      <AlurOperasional />
       <SeaFreightBlock />
       <AirFreightBlock />
       <InlandBlock />

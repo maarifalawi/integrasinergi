@@ -1,33 +1,17 @@
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { LineReveal } from "@/components/motion/LineReveal";
-import { contacts } from "@/data/contacts";
+import { ContactList } from "./ContactList";
 import { headingLines } from "@/data/headings";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
-// Fast lanes for visitors who do not need the form. Values come straight from
-// data/contacts.ts so they can never drift from the real numbers.
-const channels: { label: string; value: string; href: string; hint: string }[] = [
-  {
-    label: "EMAIL",
-    value: contacts[0]!.email,
-    href: `mailto:${contacts[0]!.email}`,
-    hint: "Cocok untuk dokumen dan rincian rute.",
-  },
-  {
-    label: "TELEPON",
-    value: contacts[0]!.phone,
-    href: `tel:${contacts[0]!.phone.replace(/[\s-]/g, "")}`,
-    hint: "Telepon kantor, langsung ke tim commercial.",
-  },
-];
-
-// Sub-768px fallback: identical single column, the channel grid stacks.
+// Each department stacks on mobile; every person has their own contact links.
 export function ContactHero() {
   const reduce = useReducedMotion();
   const up = (delay: number) =>
     reduce
-      ? {}
+      ? { initial: false as const, animate: { opacity: 1, y: 0 }, transition: { duration: 0 } }
       : {
           initial: { opacity: 0, y: 20 },
           animate: { opacity: 1, y: 0 },
@@ -35,7 +19,7 @@ export function ContactHero() {
         };
 
   return (
-    <section className="bg-background px-6 pt-24 pb-16 md:px-10 md:pt-40 md:pb-28">
+    <section className="bg-background px-6 pt-24 pb-16 md:px-10 md:pt-36 md:pb-24">
       <div className="mx-auto max-w-[1200px]">
         <div className="max-w-[860px]">
           <motion.p
@@ -54,34 +38,16 @@ export function ContactHero() {
             />
           </div>
           <motion.p
-            className="text-muted-foreground mt-8 max-w-[620px] text-[clamp(1.25rem,2.2vw,1.75rem)] leading-[1.25]"
+            className="text-muted-foreground mt-6 max-w-[560px] text-[clamp(1.125rem,1.8vw,1.375rem)] leading-relaxed"
             {...up(0.45)}
           >
-            Sebutkan rute, jenis barang, volume, dan jadwal. Tim commercial menyiapkan penawaran
-            pada hari kerja yang sama.
+            Melayani ekspor impor, domestik via laut, darat dan udara.
           </motion.p>
         </div>
 
-        {/* Quick channels: some visitors never want a form. */}
-        <motion.div className="border-border mt-12 border-t pt-10 md:mt-20" {...up(0.65)}>
-          <ul className="grid gap-x-12 gap-y-10 sm:grid-cols-2">
-            {channels.map((channel) => (
-              <li key={channel.label}>
-                <p className="text-muted-foreground font-mono text-[11px] tracking-[0.14em] uppercase">
-                  {channel.label}
-                </p>
-                <a
-                  href={channel.href}
-                  className="text-foreground hover:text-primary mt-3 inline-flex min-h-[44px] items-center text-[1.25rem] leading-[1.24] font-semibold tracking-[-0.022em] transition-colors duration-200"
-                >
-                  {channel.value}
-                </a>
-                <p className="text-muted-foreground mt-2 text-[0.875rem] leading-[1.43] tracking-[-0.016em]">
-                  {channel.hint}
-                </p>
-              </li>
-            ))}
-          </ul>
+        <motion.div id="tim-kontak" className="mt-12 scroll-mt-20 md:mt-16" {...up(0.65)}>
+          <h2 className="sr-only">Kontak per departemen</h2>
+          <ContactList layout="rows" />
         </motion.div>
       </div>
     </section>

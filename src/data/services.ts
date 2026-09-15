@@ -17,7 +17,7 @@ export const services: Service[] = [
     description:
       "Pengiriman laut FCL dan LCL untuk rute domestik maupun ekspor dan impor, memakai alokasi langsung dari pelayaran mitra.",
     image: "/img/1.png",
-    alt: "Kapal kontainer di laut tenang menjelang senja",
+    alt: "Bongkar muat kapal kontainer dengan crane di terminal pelabuhan",
     span: 3,
   },
   {
@@ -26,16 +26,16 @@ export const services: Service[] = [
     description:
       "Kargo udara domestik dan ekspor-impor yang tidak bisa menunggu kapal, ditangani dari bandara asal sampai gudang tujuan.",
     image: "/img/2.png",
-    alt: "Pesawat kargo di apron bandara pada pagi hari, pintu kargo terbuka",
+    alt: "Pesawat kargo dan palet barang yang diperiksa petugas di apron bandara",
     span: 3,
   },
   {
     slug: "inland",
     name: "Inland",
     description:
-      "Trucking dan distribusi darat untuk pengiriman domestik serta first-mile dan last-mile ekspor-impor, dijadwalkan mengikuti closing time kapal, bukan sebaliknya.",
+      "Trucking dan distribusi darat untuk pengiriman domestik, dengan penjadwalan yang fleksibel mengikuti request lead time customer.",
     image: "/img/3.png",
-    alt: "Truk kontainer melintas di jalan tol layang menjelang malam dengan latar pelabuhan",
+    alt: "Deretan armada truk putih berlogo ISL di area parkir",
     span: 3,
   },
 ];

@@ -1,12 +1,11 @@
 import { Reveal } from "@/components/motion/Reveal";
 import { Card } from "@/components/ui/Card";
 
-// The two ways a sea container is booked. Copy approved by the commercial
-// team; analogies kept because they are what clients repeat back to us.
-const modes: { name: string; tag: string; body: string; analogy: string; advantage: string }[] = [
+// The two ways a sea container is booked. The cards lead directly with each
+// mode's definition so clients can compare them without an introductory layer.
+const modes: { name: string; body: string; analogy: string; advantage: string }[] = [
   {
     name: "FCL — Full Container Load",
-    tag: "Sewa Eksklusif",
     body: "Anda menyewa satu kontainer penuh secara eksklusif hanya untuk barang Anda sendiri. Kontainer disegel dari pabrik Anda dan baru dibuka saat sampai di tujuan.",
     analogy:
       "Ibaratnya memesan taksi sendiri: Anda membayar penuh satu mobil, terserah mau diisi penuh atau hanya duduk sendiri.",
@@ -15,7 +14,6 @@ const modes: { name: string; tag: string; body: string; analogy: string; advanta
   },
   {
     name: "LCL — Less than Container Load",
-    tag: "Sewa Patungan",
     body: "Volume barang Anda terlalu sedikit untuk menyewa satu kontainer penuh, sehingga barang digabungkan (dikonsolidasi) dengan barang milik pengirim lain ke dalam satu kontainer yang sama.",
     analogy:
       "Ibaratnya naik angkot atau bus kota: Anda berbagi ruang dengan penumpang lain dan hanya membayar kursi (ruang) yang Anda tempati.",
@@ -55,44 +53,29 @@ const thClass =
 export function FclLcl() {
   return (
     <div className="border-border mt-20 border-t pt-16 md:mt-24 md:pt-20">
-      <Reveal className="grid items-end gap-6 md:grid-cols-[1fr_auto]">
-        <div>
-          <p className="text-muted-foreground flex items-center gap-3 font-mono text-[11px] tracking-[0.14em] uppercase">
-            <span aria-hidden className="bg-primary h-px w-8" />
-            FCL atau LCL
-          </p>
-          <h3 className="text-foreground mt-6 max-w-[692px] text-[clamp(1.5rem,2.5vw,2rem)] leading-[1.15] font-semibold tracking-[-0.02em]">
-            Dua cara menyewa kontainer.
-          </h3>
-          <p className="text-muted-foreground mt-4 max-w-[692px] text-[1.0625rem] leading-[1.47] tracking-[-0.022em]">
-            FCL dan LCL menentukan bagaimana barang Anda disewa dan dimuat di dalam kontainer
-            pengiriman laut.
-          </p>
-        </div>
-        <p className="text-primary hidden font-mono text-[11px] tracking-[0.14em] uppercase md:block">
-          Panduan Pemilihan
+      <Reveal>
+        <p className="text-muted-foreground flex items-center gap-3 font-mono text-[11px] tracking-[0.14em] uppercase">
+          <span aria-hidden className="bg-primary h-px w-8" />
+          FCL atau LCL
         </p>
       </Reveal>
 
-      <div className="mt-12 grid gap-6 md:grid-cols-2">
+      <div className="mt-8 grid gap-6 md:grid-cols-2">
         {modes.map((mode, index) => (
-          <Reveal key={mode.tag} delay={index * 0.08} className="h-full">
+          <Reveal key={mode.name} delay={index * 0.08} className="h-full">
             <Card className="group relative h-full overflow-hidden p-7 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_16px_36px_-14px_rgba(0,0,0,0.18)] sm:p-8">
               <span
                 aria-hidden
                 className="bg-primary absolute inset-x-0 top-0 h-[3px] origin-left scale-x-0 transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover:scale-x-100"
               />
-              <div className="flex items-center justify-between gap-4">
-                <p className="text-primary font-mono text-[11px] tracking-[0.14em] uppercase">
-                  {mode.tag}
-                </p>
+              <div className="flex items-start justify-between gap-4">
+                <h3 className="text-foreground text-[1.3125rem] leading-[1.19] font-semibold tracking-[-0.012em]">
+                  {mode.name}
+                </h3>
                 <span className="text-muted-foreground font-mono text-[11px] tabular-nums">
                   {String(index + 1).padStart(2, "0")}
                 </span>
               </div>
-              <h4 className="text-foreground mt-4 text-[1.3125rem] leading-[1.19] font-semibold tracking-[-0.012em]">
-                {mode.name}
-              </h4>
               <p className="text-muted-foreground mt-4 text-[1.0625rem] leading-[1.47] tracking-[-0.022em]">
                 {mode.body}
               </p>

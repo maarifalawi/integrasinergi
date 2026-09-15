@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { animate, motion, useInView, useReducedMotion } from "motion/react";
+import { animate, motion, useInView } from "motion/react";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { services } from "@/data/services";
 
 const EASE = [0.16, 1, 0.3, 1] as const;

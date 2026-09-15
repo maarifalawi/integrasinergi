@@ -1,21 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  AnimatePresence,
   motion,
   useMotionValueEvent,
-  useReducedMotion,
   useScroll,
   useSpring,
   useTransform,
   type MotionValue,
 } from "motion/react";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { ArrowUpRight } from "@phosphor-icons/react";
 import { Reveal } from "@/components/motion/Reveal";
-import { LineReveal } from "@/components/motion/LineReveal";
 import { CardDrift } from "@/components/motion/CardDrift";
 import { FieldLightbox } from "@/components/about/FieldLightbox";
 import { galleryPhotos, type GalleryPhoto } from "@/data/gallery";
-import { headingLines } from "@/data/headings";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 const PHOTO_WIDTH = 1080;
@@ -48,7 +45,7 @@ function GallerySlide({
   const reduce = useReducedMotion();
 
   return (
-    <div className={`min-w-0 ${className}`}>
+    <figure className={`min-w-0 ${className}`}>
       <button
         type="button"
         onClick={(event) => onOpen(index, event.currentTarget)}
@@ -58,9 +55,10 @@ function GallerySlide({
         <motion.div
           className="relative aspect-[4/5] overflow-hidden rounded-[var(--radius-card)]"
           initial={reduce ? false : { clipPath: "inset(12% 8% 12% 8% round 18px)", opacity: 0 }}
+          animate={reduce ? { clipPath: "inset(0% 0% 0% 0% round 18px)", opacity: 1 } : false}
           whileInView={{ clipPath: "inset(0% 0% 0% 0% round 18px)", opacity: 1 }}
           viewport={{ once: true, amount: 0.25 }}
-          transition={{ duration: 1.05, ease: EASE, delay: index * 0.06 }}
+          transition={{ duration: reduce ? 0 : 1.05, ease: EASE, delay: reduce ? 0 : index * 0.06 }}
         >
           <CardDrift
             progress={progress}
@@ -81,26 +79,17 @@ function GallerySlide({
               className="h-full w-full scale-[1.12] object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] select-none motion-safe:group-hover:scale-[1.16] [@media(hover:none)]:group-hover:scale-[1.12]"
             />
           </CardDrift>
-          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,transparent_48%,rgba(0,0,0,0.76)_100%)]" />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 sm:p-6">
-            <div className="min-w-0">
-              <p className="font-mono text-[9px] tracking-[0.14em] text-white/55 uppercase">
-                Dokumentasi {String(index + 1).padStart(2, "0")}
-              </p>
-              <p className="mt-1.5 truncate text-[1rem] leading-tight font-semibold tracking-[-0.018em] text-white">
-                {photo.title}
-              </p>
-              <p className="mt-1 truncate font-mono text-[9px] tracking-[0.09em] text-white/55 uppercase">
-                {photo.meta}
-              </p>
-            </div>
+          <div className="pointer-events-none absolute right-5 bottom-5 sm:right-6 sm:bottom-6">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/25 bg-black/20 text-white backdrop-blur-sm transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
               <ArrowUpRight aria-hidden size={15} />
             </span>
           </div>
         </motion.div>
       </button>
-    </div>
+      <figcaption className="text-muted-foreground-on-dark mt-4 font-mono text-[11px] leading-relaxed tracking-[0.04em] sm:text-xs">
+        {photo.meta}
+      </figcaption>
+    </figure>
   );
 }
 
@@ -154,7 +143,7 @@ function ScrollLinkedRail({ onOpen }: { onOpen: OpenHandler }) {
     measure();
     window.addEventListener("resize", measure);
     return () => window.removeEventListener("resize", measure);
-  }, []);
+  }, [reduce]);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -162,8 +151,6 @@ function ScrollLinkedRail({ onOpen }: { onOpen: OpenHandler }) {
   });
   const rawX = useTransform(scrollYProgress, [0, 1], [0, -distance]);
   const x = useSpring(rawX, { stiffness: 100, damping: 30, mass: 0.5 });
-  // The scroll hint leaves as soon as the rail starts moving.
-  const hintOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
 
   useMotionValueEvent(scrollYProgress, "change", (v) => {
     setSelected(Math.min(galleryPhotos.length - 1, Math.floor(v * galleryPhotos.length)));
@@ -186,20 +173,10 @@ function ScrollLinkedRail({ onOpen }: { onOpen: OpenHandler }) {
       style={{ height: `calc(100svh + ${distance}px)` }}
     >
       <div ref={viewportRef} className="sticky top-0 flex h-svh items-center overflow-hidden">
-        {/* Scroll hint, top right; hintOpacity fades it out once the rail
-            starts travelling. */}
-        <motion.p
-          style={{ opacity: hintOpacity }}
-          className="text-muted-foreground-on-dark absolute top-8 right-10 font-mono text-[11px] tracking-[0.14em] uppercase"
-        >
-          Gulir untuk melihat dokumentasi →
-        </motion.p>
-
         {/* The left padding mirrors the centered header above (max-w-1200 +
             px-10), so the first frame starts exactly under the heading. The
             mask fades frames out at both edges instead of hard-clipping
-            them. Frames are pure imagery, sized off the viewport height so
-            they never clip vertically. */}
+            them. Frames leave room for a single activity caption below. */}
         <motion.div
           ref={trackRef}
           style={{ x }}
@@ -217,25 +194,9 @@ function ScrollLinkedRail({ onOpen }: { onOpen: OpenHandler }) {
           ))}
         </motion.div>
 
-        {/* Context, counter, and progress stay pinned while the rail travels. */}
+        {/* The counter is navigation, not a per-photo documentation label. */}
         <div className="absolute inset-x-10 bottom-8">
-          <div className="flex items-end justify-between gap-8">
-            <div className="min-w-0">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={selected}
-                  initial={reduce ? false : { opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.28, ease: EASE }}
-                  className="min-w-0"
-                >
-                  <p className="truncate font-mono text-[9px] tracking-[0.12em] text-white/35 uppercase">
-                    {galleryPhotos[selected]?.meta}
-                  </p>
-                </motion.div>
-              </AnimatePresence>
-            </div>
+          <div className="flex justify-end">
             <p className="text-muted-foreground-on-dark shrink-0 font-mono text-[11px] tracking-[0.14em] tabular-nums">
               {String(selected + 1).padStart(2, "0")} /{" "}
               {String(galleryPhotos.length).padStart(2, "0")}
@@ -279,65 +240,28 @@ export function FieldGallery() {
 
   return (
     // overflow-x-clip (not hidden) so the sticky rail inside keeps working.
-    <section className="bg-tile-dark overflow-x-clip py-16 md:py-[7.5rem]">
+    <section
+      id="dokumentasi"
+      aria-labelledby="dokumentasi-title"
+      className="bg-tile-dark overflow-x-clip py-16 md:py-[7.5rem]"
+    >
       <div className="mx-auto max-w-[1200px] px-6 md:px-10">
-        <div className="grid gap-10 border-t border-white/10 pt-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end lg:gap-20">
-          <div>
-            <Reveal>
-              <p className="flex items-center gap-3 font-mono text-[11px] tracking-[0.12em] text-[var(--primary-on-dark)] uppercase">
-                <span aria-hidden className="h-px w-8 bg-[var(--primary-on-dark)]" />
-                Dokumentasi Operasional
-              </p>
-            </Reveal>
-            <div className="mt-6 max-w-[692px]">
-              <LineReveal
-                as="h2"
-                lines={headingLines.galeri}
-                className="text-foreground-on-dark text-[clamp(2rem,4vw,3.25rem)] leading-[1.08] font-semibold tracking-[-0.025em]"
-              />
-            </div>
-          </div>
-
-          <Reveal delay={0.08}>
-            <p className="text-muted-foreground-on-dark text-[1rem] leading-[1.55] tracking-[-0.018em]">
-              Rekaman pekerjaan nyata saat muat, verifikasi, dan distribusi. Setiap frame
-              menunjukkan proses yang kami koordinasikan langsung di lapangan.
+        <div className="border-t border-white/10 pt-8">
+          <Reveal>
+            <h2
+              id="dokumentasi-title"
+              className="text-foreground-on-dark text-[clamp(1.5rem,3vw,2.25rem)] font-semibold tracking-[-0.025em]"
+            >
+              Dokumentasi Operasional
+            </h2>
+            <p className="text-muted-foreground-on-dark mt-4 text-[0.9375rem]">
+              Sumber: Dokumentasi
             </p>
-            <dl className="mt-7 grid grid-cols-3 border-y border-white/10 py-4">
-              <div>
-                <dt className="font-mono text-[9px] tracking-[0.12em] text-white/35 uppercase">
-                  Arsip
-                </dt>
-                <dd className="mt-1.5 text-[0.875rem] font-semibold text-white">
-                  {galleryPhotos.length} Foto
-                </dd>
-              </div>
-              <div className="border-l border-white/10 pl-4">
-                <dt className="font-mono text-[9px] tracking-[0.12em] text-white/35 uppercase">
-                  Sumber
-                </dt>
-                <dd className="mt-1.5 text-[0.875rem] font-semibold text-white">Aktivitas Nyata</dd>
-              </div>
-              <div className="border-l border-white/10 pl-4">
-                <dt className="font-mono text-[9px] tracking-[0.12em] text-white/35 uppercase">
-                  Detail
-                </dt>
-                <dd className="mt-1.5 text-[0.875rem] font-semibold text-white">Buka Detail</dd>
-              </div>
-            </dl>
           </Reveal>
         </div>
       </div>
 
       <div className="mt-14 lg:hidden">
-        <div className="mx-auto mb-4 flex max-w-[1200px] items-center justify-between px-6 md:px-10">
-          <p className="font-mono text-[10px] tracking-[0.12em] text-white/45 uppercase">
-            Geser untuk melihat
-          </p>
-          <p className="font-mono text-[10px] tracking-[0.12em] text-white/35 tabular-nums">
-            01 — {String(galleryPhotos.length).padStart(2, "0")}
-          </p>
-        </div>
         <NativeStrip onOpen={handleOpen} />
       </div>
       <ScrollLinkedRail onOpen={handleOpen} />

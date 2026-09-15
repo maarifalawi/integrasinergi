@@ -4,12 +4,12 @@ import { ArrowRight } from "@phosphor-icons/react";
 import {
   motion,
   useMotionValueEvent,
-  useReducedMotion,
   useScroll,
   useSpring,
   useTransform,
   type MotionValue,
 } from "motion/react";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { Reveal } from "@/components/motion/Reveal";
 import { LineReveal } from "@/components/motion/LineReveal";
 import { CardDrift } from "@/components/motion/CardDrift";
@@ -127,7 +127,7 @@ function ScrollLinked() {
     measure();
     window.addEventListener("resize", measure);
     return () => window.removeEventListener("resize", measure);
-  }, []);
+  }, [reduce]);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,

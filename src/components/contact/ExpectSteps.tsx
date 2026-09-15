@@ -1,10 +1,11 @@
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { Reveal } from "@/components/motion/Reveal";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
 // Sets expectations right under the form, so submitting never feels like a
-// black box. Every step mirrors the approved response-time copy.
+// black box, without promising a fixed response time.
 const steps: { title: string; body: string }[] = [
   {
     title: "Detail masuk satu meja",
@@ -16,7 +17,7 @@ const steps: { title: string; body: string }[] = [
   },
   {
     title: "Penawaran kembali",
-    body: "Pada hari kerja yang sama, penawaran sampai di email Anda.",
+    body: "Penawaran disampaikan melalui email setelah kebutuhan pengiriman ditinjau.",
   },
 ];
 

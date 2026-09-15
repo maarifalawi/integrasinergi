@@ -2,9 +2,9 @@ import { useRef, useState, type FormEvent } from "react";
 import { CheckCircle } from "@phosphor-icons/react";
 import { Reveal } from "@/components/motion/Reveal";
 import { Card } from "@/components/ui/Card";
-import { ContactList } from "./ContactList";
+import { commercialContact, office } from "@/data/contacts";
 
-const EMAIL = "svetlana@integrafreight.com";
+const EMAIL = commercialContact.email;
 
 const serviceOptions = ["Sea Freight", "Air Freight", "Inland"];
 
@@ -75,7 +75,7 @@ function buildBody(values: Record<FieldName, string>) {
   return `Permintaan Penawaran\n\n${lines.join("\n")}`;
 }
 
-// Sub-768px fallback: the two columns stack, the form card first, then contacts.
+// Sub-768px fallback: the form card stacks above its destination and office address.
 export function QuoteForm() {
   const [values, setValues] = useState<Record<FieldName, string>>(empty);
   const [errors, setErrors] = useState<Partial<Record<FieldName, string>>>({});
@@ -154,9 +154,6 @@ export function QuoteForm() {
             <h2 className="text-foreground mt-5 text-[clamp(1.5rem,2.5vw,2rem)] leading-[1.15] font-semibold tracking-[-0.02em]">
               Detail kargo, rute, dan jadwal Anda.
             </h2>
-            <p className="text-muted-foreground mt-3 text-[0.875rem] leading-[1.43] tracking-[-0.016em]">
-              Direspons tim commercial pada hari kerja yang sama.
-            </p>
 
             <div className="mt-8">
               {sent ? (
@@ -318,9 +315,27 @@ export function QuoteForm() {
           </Card>
         </Reveal>
 
-        <div className="lg:sticky lg:top-24">
-          <ContactList />
-        </div>
+        <aside className="lg:sticky lg:top-24">
+          <h2 className="text-foreground text-[1.3125rem] font-semibold">Commercial Dept.</h2>
+          <p className="text-muted-foreground mt-4 text-[1rem] leading-relaxed">
+            Formulir ini membuka aplikasi email Anda dengan rincian pengiriman yang ditujukan kepada{" "}
+            {commercialContact.name}.
+          </p>
+          <a
+            href={`mailto:${EMAIL}`}
+            className="text-primary mt-4 inline-flex min-h-[44px] items-center break-all text-[0.9375rem] hover:underline"
+          >
+            {EMAIL}
+          </a>
+          <div className="border-border mt-8 border-t pt-8">
+            <h3 className="text-foreground font-semibold">Kantor</h3>
+            <address className="text-muted-foreground mt-3 leading-relaxed not-italic">
+              {office.line1}
+              <br />
+              {office.line2}
+            </address>
+          </div>
+        </aside>
       </div>
     </section>
   );

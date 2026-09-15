@@ -1,12 +1,17 @@
-import { Link } from "@tanstack/react-router";
-import { contacts, legal, office } from "@/data/contacts";
+import { Link, useRouterState } from "@tanstack/react-router";
+import { legal, office } from "@/data/contacts";
+import { ContactList } from "@/components/contact/ContactList";
 import { services } from "@/data/services";
 
-// Sub-768px fallback: the four columns collapse to a single column at px-6.
+// Sub-768px fallback: navigation and department columns stack at px-6.
 export function Footer() {
+  const isServices = useRouterState({
+    select: (state) => state.location.pathname.replace(/\/+$/, "") === "/layanan",
+  });
+
   return (
     <footer className="bg-parchment px-6 py-16 md:px-10">
-      <div className="mx-auto grid max-w-[1200px] gap-12 md:grid-cols-2 lg:grid-cols-4">
+      <div className="mx-auto grid max-w-[1200px] gap-12 md:grid-cols-3">
         <div>
           <h2 className="text-foreground text-[1.0625rem] leading-[1.24] font-semibold tracking-[-0.022em]">
             Perusahaan
@@ -63,29 +68,16 @@ export function Footer() {
           </address>
         </div>
 
-        <div>
-          <h2 className="text-foreground text-[1.0625rem] leading-[1.24] font-semibold tracking-[-0.022em]">
-            Tim
-          </h2>
-          <ul className="mt-4 flex flex-col gap-4">
-            {contacts.map((contact) => (
-              <li key={contact.email}>
-                <p className="text-foreground text-[1.0625rem] leading-[1.24] font-semibold tracking-[-0.022em]">
-                  {contact.name}
-                </p>
-                <p className="text-muted-foreground text-[0.875rem] leading-[1.43] tracking-[-0.016em]">
-                  {contact.role}
-                </p>
-                <a
-                  href={`tel:${contact.phone.replace(/[\s-]/g, "")}`}
-                  className="text-muted-foreground font-mono text-[0.8125rem] tracking-[0.02em] tabular-nums transition-colors duration-150 hover:text-foreground"
-                >
-                  {contact.phone}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {!isServices && (
+          <div className="md:col-span-3">
+            <h2 className="text-foreground text-[1.0625rem] leading-[1.24] font-semibold tracking-[-0.022em]">
+              Tim
+            </h2>
+            <div className="mt-6">
+              <ContactList />
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="border-border mx-auto mt-16 max-w-[1200px] border-t pt-6">

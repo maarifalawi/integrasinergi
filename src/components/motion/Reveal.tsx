@@ -1,4 +1,5 @@
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import type { ElementType, ReactNode } from "react";
 
 type RevealProps = {
@@ -18,7 +19,12 @@ export function Reveal({ children, delay = 0, className, as = "div" }: RevealPro
 
   if (reduce) {
     return (
-      <Component initial={false} className={className}>
+      <Component
+        initial={false}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0 }}
+        className={className}
+      >
         {children}
       </Component>
     );

@@ -1,6 +1,6 @@
-import { motion, useReducedMotion } from "motion/react";
-import { SlowScale } from "@/components/motion/SlowScale";
-import { Parallax } from "@/components/motion/Parallax";
+import { motion } from "motion/react";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { LineReveal } from "@/components/motion/LineReveal";
 import { Button } from "@/components/ui/Button";
 import { headingLines } from "@/data/headings";
 
@@ -88,8 +88,8 @@ function ScrollCue({ delay }: { delay: number }) {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8, ease: EASE, delay }}
     >
-      <span className="text-muted-foreground font-mono text-[10px] tracking-[0.24em]">SCROLL</span>
-      <span className="bg-border relative h-10 w-px overflow-hidden">
+      <span className="font-mono text-[10px] tracking-[0.24em] text-white/80">SCROLL</span>
+      <span className="relative h-10 w-px overflow-hidden bg-white/30">
         <motion.span
           className="bg-primary absolute top-0 left-0 h-3 w-px"
           animate={{ y: [-12, 40] }}
@@ -100,14 +100,13 @@ function ScrollCue({ delay }: { delay: number }) {
   );
 }
 
-// Sub-768px fallback: one column, and the photograph switches from a wide
-// 21:9 band to a 4:5 crop because the wide crop loses the yard at 390px.
+// The supplied artwork fills the opening hero, with a darker text-side overlay.
 export function Hero() {
   const reduce = useReducedMotion();
 
   const up = (delay: number) =>
     reduce
-      ? {}
+      ? { initial: false as const, animate: { opacity: 1, y: 0 }, transition: { duration: 0 } }
       : {
           initial: { opacity: 0, y: 20 },
           animate: { opacity: 1, y: 0 },
@@ -115,75 +114,45 @@ export function Hero() {
         };
 
   return (
-    <section className="bg-background">
-      <div className="mx-auto max-w-[1200px] px-6 pt-20 pb-16 md:px-10 md:pt-32 md:pb-20">
-        {reduce ? (
-          <h1 className="text-foreground max-w-[16ch] text-[clamp(2.5rem,6.5vw,5rem)] leading-[1.05] font-semibold tracking-[-0.03em]">
-            {headingLines.heroH1.map((line) => (
-              <span key={line} className="block">
-                {line}
-              </span>
-            ))}
-          </h1>
-        ) : (
-          // Hand-rolled line masks (same timing as LineReveal) so the second
-          // line can carry an underline that draws itself under the key phrase.
-          <h1 className="text-foreground max-w-[16ch] text-[clamp(2.5rem,6.5vw,5rem)] leading-[1.05] font-semibold tracking-[-0.03em]">
-            <span className="block overflow-hidden pb-[0.08em] [margin-bottom:-0.08em]">
-              <motion.span
-                className="block"
-                initial={{ y: "100%" }}
-                animate={{ y: "0%" }}
-                transition={{ duration: 1.25, ease: EASE }}
-              >
-                {headingLines.heroH1[0]}
-              </motion.span>
-            </span>
-            <span className="block overflow-hidden pb-[0.08em] [margin-bottom:-0.08em]">
-              <motion.span
-                className="block"
-                initial={{ y: "100%" }}
-                animate={{ y: "0%" }}
-                transition={{ duration: 1.25, ease: EASE, delay: 0.11 }}
-              >
-                Kami yang{" "}
-                <span className="relative inline-block">
-                  Menjamin Ruangnya
-                  <motion.svg
-                    aria-hidden
-                    className="absolute -bottom-[0.06em] left-0 h-[0.14em] w-full"
-                    viewBox="0 0 100 8"
-                    preserveAspectRatio="none"
-                  >
-                    <motion.path
-                      d="M1 6 C 30 2, 65 2, 99 5"
-                      fill="none"
-                      stroke="var(--primary)"
-                      strokeWidth={3}
-                      strokeLinecap="round"
-                      vectorEffect="non-scaling-stroke"
-                      initial={{ pathLength: 0 }}
-                      animate={{ pathLength: 1 }}
-                      transition={{ duration: 0.7, ease: EASE, delay: 1.05 }}
-                    />
-                  </motion.svg>
-                </span>
-                .
-              </motion.span>
-            </span>
-          </h1>
-        )}
+    <section id="beranda" className="bg-tile-dark relative isolate overflow-hidden">
+      <img
+        src="/img/home.png"
+        width={2934}
+        height={1600}
+        alt=""
+        loading="eager"
+        fetchPriority="high"
+        decoding="async"
+        className="absolute inset-0 -z-20 h-full w-full object-cover object-[58%_center] md:object-center"
+      />
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(3,16,32,0.86)_0%,rgba(3,16,32,0.72)_45%,rgba(3,16,32,0.18)_100%)]"
+      />
+      {!reduce && <RoutesOverlay />}
+      <div className="relative mx-auto flex min-h-[calc(100svh-3.5rem)] max-w-[1200px] flex-col justify-center px-6 py-20 md:px-10 md:py-24 lg:min-h-[min(900px,calc(100svh-3rem))]">
+        <LineReveal
+          as="h1"
+          onMount
+          lines={headingLines.heroH1}
+          className="max-w-[16ch] text-[clamp(2.5rem,6.5vw,5rem)] leading-[1.05] font-semibold tracking-[-0.03em] text-white"
+        />
         <motion.p
-          className="text-muted-foreground mt-8 max-w-[560px] text-[clamp(1.25rem,2.2vw,1.75rem)] leading-[1.25]"
+          className="mt-8 max-w-[560px] text-[clamp(1.25rem,2.2vw,1.75rem)] leading-[1.35] text-white/90"
           {...(reduce
-            ? {}
+            ? {
+                initial: false as const,
+                animate: { opacity: 1, y: 0, filter: "none" },
+                transition: { duration: 0 },
+              }
             : {
                 initial: { opacity: 0, y: 20, filter: "blur(8px)" },
                 animate: { opacity: 1, y: 0, filter: "blur(0px)" },
                 transition: { duration: 1, ease: EASE, delay: 0.45 },
               })}
         >
-          Akses langsung ke jaringan pelayaran global. Kontainer tersedia saat rute lain penuh.
+          Akses langsung ke jaringan pelayaran global. Melayani ekspor, impor, dan domestik melalui
+          FCL, LCL, Air Freight, dan Inland.
         </motion.p>
         <div className="mt-12 flex flex-wrap items-center gap-4">
           <motion.div {...up(0.65)}>
@@ -192,37 +161,13 @@ export function Hero() {
             </Button>
           </motion.div>
           <motion.div {...up(0.78)}>
-            <Button to="/layanan" variant="secondary" arrow>
+            <Button to="/layanan" variant="secondaryOnDark" arrow>
               Lihat Layanan
             </Button>
           </motion.div>
         </div>
         {!reduce && <ScrollCue delay={1.3} />}
       </div>
-
-      {/* Height is reserved by the aspect-ratio wrapper, so nothing shifts. */}
-      <motion.div
-        className="relative aspect-[4/5] w-full overflow-hidden md:aspect-[21/9]"
-        initial={reduce ? false : { clipPath: "inset(6% 3% 6% 3%)", opacity: 0 }}
-        animate={{ clipPath: "inset(0% 0% 0% 0%)", opacity: 1 }}
-        transition={{ duration: 1.3, ease: EASE, delay: 0.35 }}
-      >
-        <Parallax className="h-full w-full" range={6}>
-          <SlowScale className="h-full w-full">
-            <img
-              src="/img/POTO1.jpg"
-              width={1584}
-              height={672}
-              alt="Terminal kontainer dilihat dari udara, deretan kontainer tersusun sampai ke dermaga"
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-              className="h-full w-full scale-110 object-cover object-[center_60%]"
-            />
-          </SlowScale>
-        </Parallax>
-        {!reduce && <RoutesOverlay />}
-      </motion.div>
     </section>
   );
 }

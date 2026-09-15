@@ -17,9 +17,7 @@ export const serviceScopes: Record<string, string[]> = {
     "Distribusi domestik antar kota dan antar pulau",
     "Trucking pelabuhan ke gudang",
     "Trucking gudang ke pelabuhan",
-    "First-mile dan last-mile ekspor-impor",
-    "Penjadwalan mengikuti closing time",
-    "Pengembalian kontainer kosong ke depo",
+    "Penjadwalan mengikuti request lead time customer",
   ],
 };
 
