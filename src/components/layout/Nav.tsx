@@ -136,13 +136,21 @@ export function Nav() {
         />
         <div aria-hidden className="h-[env(safe-area-inset-top)]" />
         <div className="relative mx-auto flex h-14 max-w-[1200px] items-center justify-between px-6 md:px-10 lg:h-12">
-          {/* TODO: replace with client SVG at /public/logos/isl.svg */}
           <Link
             to="/"
-            className={`text-[19px] font-semibold tracking-[-0.04em] transition-colors duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:duration-0 ${
+            aria-label="ISLI — Beranda"
+            className={`inline-flex shrink-0 items-center gap-2 text-[19px] font-semibold tracking-[-0.04em] transition-colors duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:duration-0 ${
               onLightHero ? "text-foreground" : "text-foreground-on-dark"
             }`}
           >
+            <img
+              src="/img/LOGO.png"
+              alt=""
+              width={32}
+              height={32}
+              decoding="async"
+              className="h-8 w-8 shrink-0 object-contain"
+            />
             ISLI
           </Link>
 
@@ -162,7 +170,7 @@ export function Nav() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-6">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-6">
             <button
               type="button"
               onClick={() => setLogin(true)}

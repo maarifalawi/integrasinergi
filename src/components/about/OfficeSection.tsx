@@ -1,10 +1,9 @@
 import { Reveal } from "@/components/motion/Reveal";
 import { LineReveal } from "@/components/motion/LineReveal";
 import { office } from "@/data/contacts";
-import { ContactList } from "@/components/contact/ContactList";
 import { headingLines } from "@/data/headings";
 
-// Sub-768px fallback: address block first, then the contact list, one column.
+// Keep office details here; the team directory lives on the Contact page.
 export function OfficeSection() {
   return (
     <section className="bg-tile-dark px-6 py-16 md:px-10 md:py-[7.5rem]">
@@ -17,7 +16,7 @@ export function OfficeSection() {
           />
         </div>
 
-        <div className="mt-12 space-y-12">
+        <div className="mt-12">
           <Reveal>
             <p className="text-muted-foreground-on-dark text-[0.875rem] leading-[1.43] tracking-[-0.016em]">
               Kantor
@@ -32,8 +31,6 @@ export function OfficeSection() {
               Sales, operasional, dan commercial dalam satu koordinasi.
             </p>
           </Reveal>
-
-          <ContactList dark />
         </div>
       </div>
     </section>

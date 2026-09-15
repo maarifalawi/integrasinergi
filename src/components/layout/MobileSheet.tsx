@@ -44,7 +44,15 @@ export function MobileSheet({
     >
       <div aria-hidden className="h-[env(safe-area-inset-top)] shrink-0" />
       <div className="flex h-14 shrink-0 items-center justify-between px-6">
-        <span className="text-foreground-on-dark text-[19px] font-semibold tracking-[-0.04em]">
+        <span className="text-foreground-on-dark inline-flex shrink-0 items-center gap-2 text-[19px] font-semibold tracking-[-0.04em]">
+          <img
+            src="/img/LOGO.png"
+            alt=""
+            width={32}
+            height={32}
+            decoding="async"
+            className="h-8 w-8 shrink-0 object-contain"
+          />
           ISLI
         </span>
         <button

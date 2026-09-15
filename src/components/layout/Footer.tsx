@@ -1,14 +1,9 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { legal, office } from "@/data/contacts";
-import { ContactList } from "@/components/contact/ContactList";
 import { services } from "@/data/services";
 
-// Sub-768px fallback: navigation and department columns stack at px-6.
+// Sub-768px fallback: navigation and office columns stack at px-6.
 export function Footer() {
-  const isServices = useRouterState({
-    select: (state) => state.location.pathname.replace(/\/+$/, "") === "/layanan",
-  });
-
   return (
     <footer className="bg-parchment px-6 py-16 md:px-10">
       <div className="mx-auto grid max-w-[1200px] gap-12 md:grid-cols-3">
@@ -67,17 +62,6 @@ export function Footer() {
             {office.line2}
           </address>
         </div>
-
-        {!isServices && (
-          <div className="md:col-span-3">
-            <h2 className="text-foreground text-[1.0625rem] leading-[1.24] font-semibold tracking-[-0.022em]">
-              Tim
-            </h2>
-            <div className="mt-6">
-              <ContactList />
-            </div>
-          </div>
-        )}
       </div>
 
       <div className="border-border mx-auto mt-16 max-w-[1200px] border-t pt-6">

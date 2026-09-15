@@ -1,7 +1,7 @@
 import { EnvelopeSimple, WhatsappLogo } from "@phosphor-icons/react";
 import { contacts, departments, whatsappHref } from "@/data/contacts";
 
-/** The same department directory is shared by Contact, About, and the footer. */
+/** Department directory displayed on the Contact page. */
 export function ContactList({
   dark = false,
   layout = "columns",
