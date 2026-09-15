@@ -3,7 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Plus } from "@phosphor-icons/react";
 import { LineReveal } from "@/components/motion/LineReveal";
 import { Reveal } from "@/components/motion/Reveal";
-import { whatsapp } from "@/data/contacts";
+import { contacts } from "@/data/contacts";
 import { headingLines } from "@/data/headings";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -22,10 +22,12 @@ const items = [
     a: "Tim commercial merespons pada hari kerja yang sama setelah detail kargo, rute, dan jadwal kami terima.",
   },
   {
-    q: "Apakah ISLI menangani alat berat dan muatan berdimensi khusus?",
-    a: "Ya, melalui lini Project Cargo, termasuk survei rute, perizinan, dan pengawasan bongkar muat.",
+    q: "Apakah ISLI melayani pengiriman domestik antar pulau?",
+    a: "Ya. Ketiga lini kami melayani rute domestik: sea freight (FCL dan LCL), air freight, dan inland untuk distribusi antar kota dan antar pulau.",
   },
 ];
+
+const email = contacts[0]!.email;
 
 // Sub-768px fallback: one column already, only the gutters tighten.
 export function Faq() {
@@ -46,6 +48,29 @@ export function Faq() {
         <div className="divide-border mt-16 max-w-[860px] divide-y">
           {items.map((item, index) => {
             const isOpen = open === index;
+
+            const panel = isOpen ? (
+              <motion.div
+                id={`faq-panel-${index}`}
+                role="region"
+                aria-labelledby={`faq-trigger-${index}`}
+                className="overflow-hidden"
+                {...(reduce
+                  ? { initial: false as const }
+                  : {
+                      initial: { height: 0, opacity: 0 },
+                      animate: { height: "auto", opacity: 1 },
+                      exit: { height: 0, opacity: 0 },
+                      transition: { duration: 0.4, ease: EASE },
+                    })}
+              >
+                <p
+                  className="text-muted-foreground max-w-[692px] pb-6 text-[1.0625rem] leading-[1.47] tracking-[-0.022em]"
+                  children={item.a}
+                />
+              </motion.div>
+            ) : null;
+
             return (
               <Reveal key={item.q} delay={index * 0.05}>
                 <h3>
@@ -57,9 +82,10 @@ export function Faq() {
                     onClick={() => setOpen(isOpen ? null : index)}
                     className="group flex min-h-[44px] w-full items-center justify-between gap-6 py-6 text-left"
                   >
-                    <span className="text-foreground group-hover:text-primary text-[1.3125rem] leading-[1.19] font-semibold tracking-[-0.012em] transition-colors duration-200">
-                      {item.q}
-                    </span>
+                    <span
+                      className="text-foreground group-hover:text-primary text-[1.3125rem] leading-[1.19] font-semibold tracking-[-0.012em] transition-colors duration-200"
+                      children={item.q}
+                    />
                     <Plus
                       size={18}
                       aria-hidden="true"
@@ -71,28 +97,7 @@ export function Faq() {
                   </button>
                 </h3>
 
-                <AnimatePresence initial={false}>
-                  {isOpen ? (
-                    <motion.div
-                      id={`faq-panel-${index}`}
-                      role="region"
-                      aria-labelledby={`faq-trigger-${index}`}
-                      className="overflow-hidden"
-                      {...(reduce
-                        ? { initial: false as const }
-                        : {
-                            initial: { height: 0, opacity: 0 },
-                            animate: { height: "auto", opacity: 1 },
-                            exit: { height: 0, opacity: 0 },
-                            transition: { duration: 0.4, ease: EASE },
-                          })}
-                    >
-                      <p className="text-muted-foreground max-w-[692px] pb-6 text-[1.0625rem] leading-[1.47] tracking-[-0.022em]">
-                        {item.a}
-                      </p>
-                    </motion.div>
-                  ) : null}
-                </AnimatePresence>
+                <AnimatePresence initial={false} children={panel} />
               </Reveal>
             );
           })}
@@ -100,17 +105,18 @@ export function Faq() {
 
         {/* Exit for anyone whose question is not on the list. */}
         <Reveal delay={0.1}>
-          <p className="text-muted-foreground mt-10 max-w-[860px] text-[1.0625rem] leading-[1.47] tracking-[-0.022em]">
-            Pertanyaan lain?{" "}
-            <a
-              href={whatsapp.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary transition-opacity duration-200 hover:opacity-75"
-            >
-              Tanya langsung lewat WhatsApp
-            </a>
-          </p>
+          <p
+            className="text-muted-foreground mt-10 max-w-[860px] text-[1.0625rem] leading-[1.47] tracking-[-0.022em]"
+            children={[
+              "Pertanyaan lain? ",
+              <a
+                key="faq-email"
+                href={`mailto:${email}`}
+                className="text-primary transition-opacity duration-200 hover:opacity-75"
+                children="Tanya langsung lewat email"
+              />,
+            ]}
+          />
         </Reveal>
       </div>
     </section>

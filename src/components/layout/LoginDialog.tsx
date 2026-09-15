@@ -35,6 +35,16 @@ export function LoginDialog({ open, onClose }: { open: boolean; onClose: () => v
     if (step === "pin") inputRef.current?.focus();
   }, [step]);
 
+  // While the dialog is up, the page behind it must not scroll.
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [open]);
+
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
     if (pin.trim() !== PIN) {
@@ -48,25 +58,31 @@ export function LoginDialog({ open, onClose }: { open: boolean; onClose: () => v
   return (
     <AnimatePresence>
       {open ? (
-        <motion.div
+        <div
+          data-lenis-prevent
           className="fixed inset-0 flex items-center justify-center px-6"
           style={{ zIndex: z.mobileSheet }}
-          initial={reduce ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.32, ease: EASE }}
         >
-          <button
+          {/* data-lenis-prevent stops Lenis (desktop smooth scroll) from
+              hijacking wheel events over the dialog; body overflow:hidden
+              above covers native scroll everywhere else.
+              backdropFilter is animated (not a static class) so the blur
+              interpolates smoothly instead of snapping in fully applied. */}
+          <motion.button
             type="button"
             aria-label="Tutup"
             onClick={onClose}
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/60"
+            initial={reduce ? false : { opacity: 0, backdropFilter: "blur(0px)" }}
+            animate={{ opacity: 1, backdropFilter: "blur(8px)" }}
+            exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+            transition={{ duration: 0.32, ease: EASE }}
           />
 
           <motion.div
             role="dialog"
             aria-modal="true"
-            aria-label="Login IntegraOps"
+            aria-label="Login internal IntegraOps, khusus tim ISLI"
             className="bg-background relative w-full max-w-[420px] rounded-[var(--radius-card)] p-8"
             initial={reduce ? false : { opacity: 0, y: 20, scale: 0.985 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -84,12 +100,16 @@ export function LoginDialog({ open, onClose }: { open: boolean; onClose: () => v
 
             {step === "confirm" ? (
               <>
-                <h2 className="text-foreground text-[1.3125rem] leading-[1.19] font-semibold tracking-[-0.012em]">
-                  Anda yakin mau login ke sistem IntegraOps?
+                <span className="border-border text-muted-foreground inline-flex items-center rounded-full border px-3 py-1 font-mono text-[11px] tracking-[0.08em] uppercase">
+                  Khusus tim internal
+                </span>
+                <h2 className="text-foreground mt-4 text-[1.3125rem] leading-[1.19] font-semibold tracking-[-0.012em]">
+                  Login ini hanya untuk tim internal ISLI
                 </h2>
                 <p className="text-muted-foreground mt-4 text-[0.9375rem] leading-[1.47] tracking-[-0.016em]">
-                  Halaman ini khusus untuk tim internal ISLI. Anda akan diminta memasukkan PIN
-                  akses.
+                  Area ini adalah akses ke sistem internal IntegraOps. Jika Anda pengunjung atau
+                  calon klien, Anda tidak perlu login &mdash; semua informasi layanan tersedia
+                  langsung di situs ini.
                 </p>
                 <div className="mt-8 flex gap-3">
                   <button
@@ -97,14 +117,14 @@ export function LoginDialog({ open, onClose }: { open: boolean; onClose: () => v
                     onClick={() => setStep("pin")}
                     className="bg-primary text-primary-foreground inline-flex min-h-[44px] flex-1 items-center justify-center rounded-full px-[22px] text-[0.9375rem] transition-transform duration-[120ms] active:scale-[0.96]"
                   >
-                    Ya, lanjutkan
+                    Saya tim ISLI
                   </button>
                   <button
                     type="button"
                     onClick={onClose}
                     className="border-border text-foreground inline-flex min-h-[44px] flex-1 items-center justify-center rounded-full border px-[22px] text-[0.9375rem] transition-transform duration-[120ms] active:scale-[0.96]"
                   >
-                    Batal
+                    Kembali
                   </button>
                 </div>
               </>
@@ -172,7 +192,7 @@ export function LoginDialog({ open, onClose }: { open: boolean; onClose: () => v
               </>
             ) : null}
           </motion.div>
-        </motion.div>
+        </div>
       ) : null}
     </AnimatePresence>
   );

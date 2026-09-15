@@ -1,20 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ServicesHero } from "@/components/services/ServicesHero";
 import { AlurOperasional } from "@/components/services/AlurOperasional";
-import {
-  SeaFreightBlock,
-  AirFreightBlock,
-  DomesticForwardingBlock,
-  ProjectCargoBlock,
-  TransportationBlock,
-} from "@/components/services/ServiceBlocks";
+import { SeaFreightBlock, AirFreightBlock, InlandBlock } from "@/components/services/ServiceBlocks";
 import { PartnerStrip } from "@/components/services/PartnerStrip";
 import { CoverageSection } from "@/components/map/CoverageSection";
 import { ClosingBand } from "@/components/home/ClosingBand";
 
 const title = "Layanan Forwarding Laut, Udara dan Darat | ISLI";
 const description =
-  "Sea freight, air freight, domestic forwarding, project cargo, dan transportation dengan kontainer SOC dari mitra pelayaran internasional.";
+  "Sea freight (FCL dan LCL), air freight, dan inland untuk pengiriman domestik maupun ekspor dan impor, dengan kontainer SOC dari mitra pelayaran internasional.";
 
 export const Route = createFileRoute("/layanan")({
   head: () => ({
@@ -30,8 +24,8 @@ export const Route = createFileRoute("/layanan")({
   component: Services,
 });
 
-// Surface sequence: white, parchment, white, parchment, white, parchment,
-// white, pearl, dark, photographic.
+// Surface sequence: white, parchment, white, parchment, white, pearl,
+// dark, photographic.
 function Services() {
   return (
     <>
@@ -39,9 +33,7 @@ function Services() {
       <AlurOperasional />
       <SeaFreightBlock />
       <AirFreightBlock />
-      <DomesticForwardingBlock />
-      <ProjectCargoBlock />
-      <TransportationBlock />
+      <InlandBlock />
       <PartnerStrip />
       <CoverageSection />
       <ClosingBand />

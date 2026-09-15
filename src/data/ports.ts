@@ -1,107 +1,111 @@
-// Abstract network coordinates for the coverage map. The dots are deliberately
-// not a complete or authoritative list of destinations — they illustrate the
-// density of the network, while the surrounding copy states the actual scope.
+// Real geographic coordinates for the coverage map. The destination lists are
+// illustrative, not exhaustive — they show the density of the network on a real
+// map, while the surrounding copy states the actual scope.
 
-export type Point = { x: number; y: number };
 export type TabId = "domestik" | "internasional";
 
-export const ORIGIN: Point = { x: 500, y: 340 };
+/** [latitude, longitude] */
+export type LatLng = [number, number];
 
-const domesticNodes: Point[] = [
-  { x: 77, y: 115.9 },
-  { x: 48.4, y: 100.2 },
-  { x: 141.2, y: 100.7 },
-  { x: 197.8, y: 173 },
-  { x: 173.2, y: 157.2 },
-  { x: 189.8, y: 135.3 },
-  { x: 282.3, y: 207.9 },
-  { x: 290.4, y: 201 },
-  { x: 329.4, y: 200 },
-  { x: 344.7, y: 187.3 },
-  { x: 364.1, y: 182.5 },
-  { x: 369, y: 230.9 },
-  { x: 384.7, y: 194.6 },
-  { x: 482.6, y: 269.9 },
-  { x: 418.1, y: 215.5 },
-  { x: 458.7, y: 285 },
-  { x: 512.9, y: 273.7 },
-  { x: 510.1, y: 240.2 },
-  { x: 639.8, y: 296.4 },
-  { x: 564.3, y: 303.1 },
-  { x: 642.1, y: 277.2 },
-  { x: 641.2, y: 267.1 },
-  { x: 714.4, y: 244 },
-  { x: 703.9, y: 272.7 },
-  { x: 801.4, y: 296.5 },
-  { x: 770.8, y: 296.3 },
-  { x: 772.1, y: 320.8 },
-  { x: 902.6, y: 295.8 },
+export type GeoPoint = {
+  name: string;
+  position: LatLng;
+};
+
+export type CoverageChart = {
+  label: string;
+  /** Initial map center, used when no bounds are set. */
+  center: LatLng;
+  zoom: number;
+  /** When set, the map fits these bounds instead of center/zoom. */
+  bounds?: [LatLng, LatLng];
+  origin: GeoPoint;
+  destinations: GeoPoint[];
+};
+
+// All routes on the map fan out from the home port.
+const ORIGIN: GeoPoint = { name: "Jakarta · Tanjung Priok", position: [-6.104, 106.885] };
+
+const domesticDestinations: GeoPoint[] = [
+  { name: "Medan · Belawan", position: [3.784, 98.694] },
+  { name: "Batam", position: [1.13, 104.053] },
+  { name: "Dumai", position: [1.666, 101.4] },
+  { name: "Padang · Teluk Bayur", position: [-1.0, 100.367] },
+  { name: "Palembang · Boom Baru", position: [-3.0, 104.767] },
+  { name: "Bandar Lampung · Panjang", position: [-5.45, 105.317] },
+  { name: "Cilacap", position: [-7.73, 109.0] },
+  { name: "Semarang · Tanjung Emas", position: [-6.95, 110.417] },
+  { name: "Surabaya · Tanjung Perak", position: [-7.217, 112.717] },
+  { name: "Denpasar · Benoa", position: [-8.75, 115.217] },
+  { name: "Pontianak", position: [-0.017, 109.333] },
+  { name: "Banjarmasin · Trisakti", position: [-3.317, 114.583] },
+  { name: "Balikpapan · Semayang", position: [-1.267, 116.817] },
+  { name: "Samarinda", position: [-0.5, 117.15] },
+  { name: "Tarakan", position: [3.3, 117.633] },
+  { name: "Makassar · Soekarno–Hatta", position: [-5.117, 119.417] },
+  { name: "Palu · Pantoloan", position: [-0.717, 119.85] },
+  { name: "Kendari", position: [-3.967, 122.583] },
+  { name: "Manado", position: [1.483, 124.833] },
+  { name: "Bitung", position: [1.45, 125.183] },
+  { name: "Kupang · Tenau", position: [-10.2, 123.533] },
+  { name: "Ambon · Yos Sudarso", position: [-3.683, 128.183] },
+  { name: "Sorong", position: [-0.883, 131.25] },
+  { name: "Jayapura", position: [-2.533, 140.717] },
+  { name: "Merauke", position: [-8.483, 140.4] },
 ];
 
-const internationalNodes: Point[] = [
-  { x: 744.2, y: 348.6 },
-  { x: 214.6, y: 222.9 },
-  { x: 742.5, y: 340.2 },
-  { x: 75.7, y: 341.8 },
-  { x: 258.9, y: 328.8 },
-  { x: 744.6, y: 294.5 },
-  { x: 133.3, y: 236.9 },
-  { x: 705.4, y: 285.9 },
-  { x: 486.5, y: 154 },
-  { x: 100.1, y: 177.5 },
-  { x: 595.8, y: 84.4 },
-  { x: 709.1, y: 131.5 },
-  { x: 403.9, y: 114.2 },
-  { x: 95.7, y: 336.7 },
-  { x: 574.9, y: 85.5 },
-  { x: 518.3, y: 64.8 },
-  { x: 798.9, y: 224.4 },
-  { x: 867.3, y: 301.6 },
-  { x: 449.1, y: 131.4 },
-  { x: 169.9, y: 314.3 },
-  { x: 772, y: 167.9 },
-  { x: 733.3, y: 252.6 },
-  { x: 280.5, y: 354.6 },
-  { x: 138.3, y: 277.5 },
-  { x: 606.2, y: 96.1 },
-  { x: 281.3, y: 294.2 },
-  { x: 788.6, y: 238.2 },
-  { x: 687.7, y: 340.7 },
-  { x: 937.9, y: 98.9 },
-  { x: 133.4, y: 283.4 },
-  { x: 466.5, y: 78.1 },
-  { x: 219.2, y: 296.1 },
-  { x: 578.2, y: 156.6 },
-  { x: 62.8, y: 143.4 },
-  { x: 154.4, y: 122.5 },
-  { x: 522.6, y: 135.8 },
+const internationalDestinations: GeoPoint[] = [
+  { name: "Singapura", position: [1.264, 103.84] },
+  { name: "Port Klang, Malaysia", position: [3.0, 101.4] },
+  { name: "Laem Chabang, Thailand", position: [13.083, 100.883] },
+  { name: "Ho Chi Minh · Cat Lai, Vietnam", position: [10.767, 106.75] },
+  { name: "Manila, Filipina", position: [14.6, 120.967] },
+  { name: "Kaohsiung, Taiwan", position: [22.617, 120.283] },
+  { name: "Hong Kong", position: [22.317, 114.167] },
+  { name: "Shenzhen · Yantian, Tiongkok", position: [22.583, 114.283] },
+  { name: "Shanghai, Tiongkok", position: [31.233, 121.483] },
+  { name: "Busan, Korea Selatan", position: [35.1, 129.033] },
+  { name: "Tokyo, Jepang", position: [35.65, 139.767] },
+  { name: "Colombo, Sri Lanka", position: [6.933, 79.85] },
+  { name: "Nhava Sheva, India", position: [18.95, 72.95] },
+  { name: "Chennai, India", position: [13.1, 80.3] },
+  { name: "Jebel Ali, Uni Emirat Arab", position: [25.017, 55.067] },
+  { name: "Dammam, Arab Saudi", position: [26.5, 50.2] },
+  { name: "Jeddah, Arab Saudi", position: [21.483, 39.183] },
+  { name: "Mombasa, Kenya", position: [-4.067, 39.667] },
+  { name: "Durban, Afrika Selatan", position: [-29.867, 31.05] },
+  { name: "Rotterdam, Belanda", position: [51.917, 4.483] },
+  { name: "Antwerp, Belgia", position: [51.267, 4.4] },
+  { name: "Hamburg, Jerman", position: [53.533, 9.983] },
+  { name: "Felixstowe, Inggris", position: [51.95, 1.317] },
+  { name: "Santos, Brasil", position: [-23.95, -46.3] },
+  { name: "Buenos Aires, Argentina", position: [-34.6, -58.367] },
+  { name: "Los Angeles, Amerika Serikat", position: [33.733, -118.267] },
+  { name: "Houston, Amerika Serikat", position: [29.75, -95.283] },
+  { name: "New York, Amerika Serikat", position: [40.683, -74.017] },
+  { name: "Fremantle, Australia", position: [-32.05, 115.75] },
+  { name: "Melbourne, Australia", position: [-37.817, 144.95] },
+  { name: "Sydney, Australia", position: [-33.867, 151.2] },
+  { name: "Auckland, Selandia Baru", position: [-36.833, 174.783] },
 ];
 
-export const charts: Record<
-  TabId,
-  {
-    label: string;
-    width: number;
-    height: number;
-    equatorY: number;
-    origin: Point;
-    nodes: Point[];
-  }
-> = {
+export const coverage: Record<TabId, CoverageChart> = {
   domestik: {
     label: "Domestik",
-    width: 1000,
-    height: 420,
-    equatorY: 168,
+    center: [-2.2, 118],
+    zoom: 4,
+    bounds: [
+      [-11.5, 93.5],
+      [7.5, 142.5],
+    ],
     origin: ORIGIN,
-    nodes: domesticNodes,
+    destinations: domesticDestinations,
   },
   internasional: {
     label: "Internasional",
-    width: 1000,
-    height: 420,
-    equatorY: 346,
+    center: [18, 112],
+    zoom: 2,
     origin: ORIGIN,
-    nodes: internationalNodes,
+    destinations: internationalDestinations,
   },
 };

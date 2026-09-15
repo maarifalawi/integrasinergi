@@ -16,7 +16,7 @@ const stats: { value: number; label: string; caption: string }[] = [
   {
     value: services.length,
     label: "LINI LAYANAN",
-    caption: "Laut, udara, domestik, project cargo, trucking.",
+    caption: "Laut, udara, dan darat.",
   },
   {
     value: grupLines,

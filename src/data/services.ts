@@ -1,5 +1,7 @@
+export type ServiceSlug = "sea-freight" | "air-freight" | "inland";
+
 export type Service = {
-  slug: string;
+  slug: ServiceSlug;
   name: string;
   description: string;
   image: string;
@@ -13,8 +15,8 @@ export const services: Service[] = [
     slug: "sea-freight",
     name: "Sea Freight",
     description:
-      "Pengiriman laut FCL dan LCL untuk ekspor dan impor, memakai alokasi langsung dari pelayaran mitra.",
-    image: "/img/service-sea-freight.jpg",
+      "Pengiriman laut FCL dan LCL untuk rute domestik maupun ekspor dan impor, memakai alokasi langsung dari pelayaran mitra.",
+    image: "/img/1.png",
     alt: "Kapal kontainer di laut tenang menjelang senja",
     span: 3,
   },
@@ -22,37 +24,19 @@ export const services: Service[] = [
     slug: "air-freight",
     name: "Air Freight",
     description:
-      "Kargo yang tidak bisa menunggu kapal, ditangani dari bandara asal sampai gudang tujuan.",
-    image: "/img/service-air-freight.jpg",
+      "Kargo udara domestik dan ekspor-impor yang tidak bisa menunggu kapal, ditangani dari bandara asal sampai gudang tujuan.",
+    image: "/img/2.png",
     alt: "Pesawat kargo di apron bandara pada pagi hari, pintu kargo terbuka",
     span: 3,
   },
   {
-    slug: "domestic-forwarding",
-    name: "Domestic Forwarding",
+    slug: "inland",
+    name: "Inland",
     description:
-      "Distribusi antar pulau dengan kontainer SOC, sehingga jadwal Anda tidak menempel pada alokasi liner.",
-    image: "/img/service-domestic-forwarding.jpg",
-    alt: "Kapal feeder kontainer bersandar di pelabuhan pesisir Indonesia pada pagi berkabut",
-    span: 2,
-  },
-  {
-    slug: "project-cargo",
-    name: "Project Cargo",
-    description:
-      "Alat berat dan muatan berdimensi khusus, termasuk survei rute, perizinan, dan pengawasan bongkar muat.",
-    image: "/img/service-project-cargo.jpg",
-    alt: "Bejana baja berukuran besar dan alat berat terikat di atas trailer lowbed di dermaga",
-    span: 2,
-  },
-  {
-    slug: "transportation",
-    name: "Transportation",
-    description:
-      "Trucking dari dan ke pelabuhan, dijadwalkan mengikuti closing time kapal, bukan sebaliknya.",
-    image: "/img/service-transportation.jpg",
+      "Trucking dan distribusi darat untuk pengiriman domestik serta first-mile dan last-mile ekspor-impor, dijadwalkan mengikuti closing time kapal, bukan sebaliknya.",
+    image: "/img/3.png",
     alt: "Truk kontainer melintas di jalan tol layang menjelang malam dengan latar pelabuhan",
-    span: 2,
+    span: 3,
   },
 ];
 

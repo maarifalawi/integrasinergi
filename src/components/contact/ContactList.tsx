@@ -12,33 +12,22 @@ export function ContactList() {
         {contacts.map((contact, index) => (
           <Reveal key={contact.email} delay={index * 0.06}>
             <div className="py-6">
-              <p className="text-foreground text-[1.0625rem] leading-[1.24] font-semibold tracking-[-0.022em]">
-                {contact.name}
-              </p>
-              <p className="text-muted-foreground mt-1 text-[0.875rem] leading-[1.43] tracking-[-0.016em]">
-                {contact.role}
-              </p>
+              <p
+                className="text-foreground text-[1.0625rem] leading-[1.24] font-semibold tracking-[-0.022em]"
+                children={contact.name}
+              />
+              <p
+                className="text-muted-foreground mt-1 text-[0.875rem] leading-[1.43] tracking-[-0.016em]"
+                children={contact.role}
+              />
               <p className="mt-3 flex flex-wrap items-center gap-2">
-                <a href={`tel:${contact.phone.replace(/\s/g, "")}`} className={linkClass}>
-                  Telepon
-                </a>
-                <span aria-hidden="true" className="text-border">
-                  &middot;
-                </span>
-                <a href={`mailto:${contact.email}`} className={linkClass}>
-                  Email
-                </a>
-                <span aria-hidden="true" className="text-border">
-                  &middot;
-                </span>
                 <a
-                  href={`https://wa.me/${contact.waNumber}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href={`tel:${contact.phone.replace(/[\s-]/g, "")}`}
                   className={linkClass}
-                >
-                  WhatsApp
-                </a>
+                  children="Telepon"
+                />
+                <span aria-hidden="true" className="text-border" children="·" />
+                <a href={`mailto:${contact.email}`} className={linkClass} children="Email" />
               </p>
             </div>
           </Reveal>
@@ -46,12 +35,14 @@ export function ContactList() {
       </div>
 
       <div className="border-border mt-8 border-t pt-8">
-        <p className="text-muted-foreground text-[1.0625rem] leading-[1.47] tracking-[-0.022em]">
-          {office.line1}
-        </p>
-        <p className="text-muted-foreground text-[1.0625rem] leading-[1.47] tracking-[-0.022em]">
-          {office.line2}
-        </p>
+        <p
+          className="text-muted-foreground text-[1.0625rem] leading-[1.47] tracking-[-0.022em]"
+          children={office.line1}
+        />
+        <p
+          className="text-muted-foreground text-[1.0625rem] leading-[1.47] tracking-[-0.022em]"
+          children={office.line2}
+        />
       </div>
     </div>
   );

@@ -1,299 +1,215 @@
 import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { charts, ORIGIN, type Point, type TabId } from "@/data/ports";
+import type { Map as LeafletMap } from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { coverage, type LatLng, type TabId } from "@/data/ports";
 
 /**
- * Tier 3, the single signature moment on the site, and the only file allowed
- * to import GSAP. The route drawing is bound to a tab click, never to scroll,
- * so the heaviest animation on the site runs while the page is stationary.
+ * Tier 3, the single signature moment on the site: a real map rendered from
+ * Esri light canvas tiles, with curved routes drawn from the Jakarta origin
+ * to every destination of the active tab.
  *
- * Sub-768px fallback: this whole figure is removed from the layout and from
- * the accessibility tree. The tabs and the summary list carry the same
- * information there, and no GSAP context is ever created.
+ * Leaflet is dynamically imported so its module never evaluates on the server,
+ * and the whole map is torn down and rebuilt on every tab switch. The route
+ * draw-in uses the Web Animations API, bound to the tab click, never to scroll.
  */
 
-const EASE_OUT_EXPO = "expo.out";
+// Esri light canvas tiles keep the map itself clean and white while the
+// surrounding coverage section retains its dark visual treatment.
+const TILES_BASE =
+  "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}";
+const TILES_LABELS =
+  "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}";
+const ATTRIBUTION =
+  'Esri, TomTom, Garmin, FAO, NOAA, USGS &middot; &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors';
 
-function arc(x1: number, y1: number, x2: number, y2: number) {
-  const mx = (x1 + x2) / 2;
-  const my = (y1 + y2) / 2;
-  const dx = x2 - x1;
-  const dy = y2 - y1;
+const ROUTE_COLOR = "#0066cc"; // var(--primary)
+
+type LeafletModule = typeof import("leaflet");
+
+/**
+ * Shift a longitude into the copy of the world closest to the origin, so every
+ * route takes the short way around the globe instead of crossing the whole map.
+ */
+function nearestLng(lng: number, originLng: number) {
+  let adjusted = lng;
+  while (adjusted - originLng > 180) adjusted -= 360;
+  while (originLng - adjusted > 180) adjusted += 360;
+  return adjusted;
+}
+
+/** Quadratic bezier between two geographic points, always bowing north on screen. */
+function curvedRoute(map: LeafletMap, L: LeafletModule, from: LatLng, to: LatLng): LatLng[] {
+  const zoom = map.getZoom();
+  const p1 = map.project(L.latLng(from[0], from[1]), zoom);
+  const p2 = map.project(L.latLng(to[0], to[1]), zoom);
+  const dx = p2.x - p1.x;
+  const dy = p2.y - p1.y;
   const len = Math.hypot(dx, dy);
-  // perpendicular offset, 16% of the chord, always bowing north
+  if (len === 0) return [from, to];
+
+  // Perpendicular offset, 16% of the chord, always bowing north (up on screen).
   const nx = -dy / len;
   const ny = dx / len;
   const bow = len * 0.16 * (ny > 0 ? -1 : 1);
-  return `M ${x1} ${y1} Q ${mx + nx * bow} ${my + ny * bow} ${x2} ${y2}`;
+  const cx = (p1.x + p2.x) / 2 + nx * bow;
+  const cy = (p1.y + p2.y) / 2 + ny * bow;
+
+  const points: LatLng[] = [];
+  for (let i = 0; i <= 40; i += 1) {
+    const t = i / 40;
+    const u = 1 - t;
+    const x = u * u * p1.x + 2 * u * t * cx + t * t * p2.x;
+    const y = u * u * p1.y + 2 * u * t * cy + t * t * p2.y;
+    const latLng = map.unproject(L.point(x, y), zoom);
+    points.push([latLng.lat, latLng.lng]);
+  }
+  return points;
 }
 
-function Graticule({ width, height }: { width: number; height: number }) {
-  const verticals: number[] = [];
-  for (let x = 100; x < width; x += 100) verticals.push(x);
-  const horizontals: number[] = [];
-  for (let y = 60; y < height; y += 60) horizontals.push(y);
+/** Route draw-in plus marker fade-in, staggered per element. */
+function animateIn(map: LeafletMap) {
+  const routesPane = map.getPane("routes");
+  const markersPane = map.getPane("markers");
+  if (!routesPane || !markersPane) return;
 
-  return (
-    <g shapeRendering="crispEdges">
-      {verticals.map((x) => (
-        <line
-          key={`v${x}`}
-          x1={x}
-          y1={0}
-          x2={x}
-          y2={height}
-          stroke="rgba(255,255,255,0.06)"
-          strokeWidth={1}
-        />
-      ))}
-      {horizontals.map((y) => (
-        <line
-          key={`h${y}`}
-          x1={0}
-          y1={y}
-          x2={width}
-          y2={y}
-          stroke="rgba(255,255,255,0.06)"
-          strokeWidth={1}
-        />
-      ))}
-    </g>
-  );
-}
+  routesPane.querySelectorAll<SVGPathElement>("path").forEach((path, index) => {
+    const length = path.getTotalLength();
+    path.style.strokeDasharray = String(length);
+    path.style.strokeDashoffset = String(length);
+    const animation = path.animate(
+      [{ strokeDashoffset: String(length) }, { strokeDashoffset: "0" }],
+      {
+        duration: 900,
+        delay: 250 + index * 45,
+        easing: "cubic-bezier(0.16, 1, 0.3, 1)",
+        fill: "forwards",
+      },
+    );
+    animation.onfinish = () => {
+      path.style.strokeDasharray = "";
+      path.style.strokeDashoffset = "";
+    };
+  });
 
-type Destination = { point: Point; d: string; length: number };
-
-function Chart({ tab, active }: { tab: TabId; active: boolean }) {
-  const chart = charts[tab];
-  const origin = chart.origin;
-
-  const destinations: Destination[] = chart.nodes
-    .map((point) => ({
-      point,
-      d: arc(origin.x, origin.y, point.x, point.y),
-      length: Math.hypot(point.x - origin.x, point.y - origin.y),
-    }))
-    // nearest destination draws first
-    .sort((a, b) => a.length - b.length);
-
-  return (
-    <svg
-      viewBox={`0 0 ${chart.width} ${chart.height}`}
-      className="absolute inset-0 h-full w-full"
-      data-chart={tab}
-      role="img"
-      aria-label={`Peta jaringan ${chart.label} secara umum, bukan daftar lengkap rute`}
-      style={{ opacity: active ? 1 : 0 }}
-    >
-      <Graticule width={chart.width} height={chart.height} />
-
-      <line
-        x1={0}
-        y1={chart.equatorY}
-        x2={chart.width}
-        y2={chart.equatorY}
-        stroke="rgba(255,255,255,0.14)"
-        strokeDasharray="4 6"
-      />
-
-      <g data-routes>
-        {destinations.map((destination, index) => (
-          <path
-            key={index}
-            d={destination.d}
-            stroke="var(--primary-on-dark)"
-            strokeWidth={1.5}
-            fill="none"
-            strokeLinecap="round"
-            opacity={0.75}
-          />
-        ))}
-      </g>
-
-      <g data-ghosts />
-
-      <g
-        data-marker
-        data-origin="true"
-        className="group focus:outline-none"
-        tabIndex={0}
-        role="img"
-        aria-label="Titik asal"
-        style={{ transformBox: "fill-box", transformOrigin: "center" }}
-      >
-        <circle cx={origin.x} cy={origin.y} r={16} fill="transparent" className="cursor-pointer" />
-        <circle
-          data-dot
-          cx={origin.x}
-          cy={origin.y}
-          r={5}
-          fill="var(--primary-on-dark)"
-          className="transition-[r] duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:[r:5.5] group-focus-visible:[r:5.5]"
-        />
-      </g>
-
-      {chart.nodes.map((point, index) => (
-        <g
-          key={index}
-          data-marker
-          className="group focus:outline-none"
-          tabIndex={0}
-          role="img"
-          aria-label="Titik tujuan"
-          style={{ transformBox: "fill-box", transformOrigin: "center" }}
-        >
-          <circle cx={point.x} cy={point.y} r={14} fill="transparent" className="cursor-pointer" />
-          <circle
-            data-dot
-            cx={point.x}
-            cy={point.y}
-            r={3.5}
-            fill="rgba(255,255,255,0.55)"
-            className="transition-[r] duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:[r:5.5] group-focus-visible:[r:5.5]"
-          />
-        </g>
-      ))}
-    </svg>
-  );
+  markersPane.querySelectorAll<SVGPathElement>("path").forEach((path, index) => {
+    path.animate([{ opacity: 0 }, { opacity: 1 }], {
+      duration: 350,
+      delay: 300 + index * 45,
+      fill: "backwards",
+    });
+  });
 }
 
 export default function CoverageMap({ tab }: { tab: TabId }) {
-  const figureRef = useRef<HTMLDivElement>(null);
-  const timelineRef = useRef<gsap.core.Timeline | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const root = figureRef.current;
-    if (!root) return;
+    let disposed = false;
+    let map: LeafletMap | undefined;
 
-    const wide = window.matchMedia("(min-width: 768px)").matches;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    async function build() {
+      const L = await import("leaflet");
+      const container = containerRef.current;
+      if (disposed || !container) return;
 
-    const svgs = Array.from(root.querySelectorAll<SVGSVGElement>("svg[data-chart]"));
-    const incoming = svgs.find((svg) => svg.dataset["chart"] === tab);
-    const outgoing = svgs.filter((svg) => svg.dataset["chart"] !== tab);
-    if (!incoming) return;
+      const chart = coverage[tab];
+      // Narrow screens sit one zoom level further out, so the network stays
+      // inside the viewport without forcing the visitor to drag first.
+      const wide = window.matchMedia("(min-width: 768px)").matches;
 
-    const routes = Array.from(incoming.querySelectorAll<SVGPathElement>("[data-routes] path"));
-    const markers = Array.from(incoming.querySelectorAll<SVGGElement>("[data-marker]"));
-    const ghostLayer = incoming.querySelector<SVGGElement>("[data-ghosts]");
-
-    // Reduced motion, and every viewport below 768px, render the final state
-    // and never create a GSAP context at all.
-    if (!wide || reduce) {
-      incoming.style.opacity = "1";
-      outgoing.forEach((svg) => {
-        svg.style.opacity = "0";
+      map = L.map(container, {
+        center: chart.center,
+        zoom: wide ? chart.zoom : chart.zoom - 1,
+        minZoom: 1,
+        maxZoom: 10,
+        zoomControl: false,
+        scrollWheelZoom: false,
+        doubleClickZoom: false,
+        boxZoom: false,
+        keyboard: false,
+        worldCopyJump: true,
       });
-      routes.forEach((path) => {
-        path.style.strokeDasharray = "";
-        path.style.strokeDashoffset = "";
+      map.attributionControl.setPrefix(false);
+
+      L.tileLayer(TILES_BASE, { attribution: ATTRIBUTION }).addTo(map);
+      // Labels sit in the marker pane's tile slot so they render above the
+      // routes instead of being hidden underneath them.
+      map.createPane("labels");
+      map.getPane("labels")!.style.zIndex = "430";
+      map.getPane("labels")!.style.pointerEvents = "none";
+      L.tileLayer(TILES_LABELS, { pane: "labels" }).addTo(map);
+
+      // Dedicated panes keep routes under markers and let the animation target
+      // each layer without touching the tile pane.
+      map.createPane("routes");
+      map.getPane("routes")!.style.zIndex = "410";
+      map.createPane("markers");
+      map.getPane("markers")!.style.zIndex = "420";
+
+      if (chart.bounds) {
+        map.fitBounds(L.latLngBounds(chart.bounds[0], chart.bounds[1]));
+      }
+
+      const origin = chart.origin.position;
+      const destinationPosition = (position: LatLng): LatLng => [
+        position[0],
+        nearestLng(position[1], origin[1]),
+      ];
+
+      chart.destinations.forEach((destination) => {
+        L.polyline(curvedRoute(map!, L, origin, destinationPosition(destination.position)), {
+          pane: "routes",
+          color: ROUTE_COLOR,
+          weight: 1.5,
+          opacity: 0.7,
+          lineCap: "round",
+          interactive: false,
+        }).addTo(map!);
       });
-      markers.forEach((marker) => {
-        marker.style.transform = "";
+
+      chart.destinations.forEach((destination) => {
+        L.circleMarker(destinationPosition(destination.position), {
+          pane: "markers",
+          radius: 4,
+          stroke: false,
+          fillColor: ROUTE_COLOR,
+          fillOpacity: 0.9,
+        })
+          .addTo(map!)
+          .bindTooltip(destination.name, { direction: "top", offset: [0, -6] });
       });
-      return;
+
+      L.circleMarker(origin, {
+        pane: "markers",
+        radius: 7,
+        stroke: true,
+        color: "#ffffff",
+        weight: 2,
+        fillColor: ROUTE_COLOR,
+        fillOpacity: 1,
+      })
+        .addTo(map)
+        .bindTooltip(chart.origin.name, { direction: "top", offset: [0, -10] });
+
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        animateIn(map);
+      }
     }
 
-    const ctx = gsap.context(() => {
-      timelineRef.current?.kill();
-      if (ghostLayer) ghostLayer.replaceChildren();
-
-      // Hard reset, so a rapid tab switch can never leave a route half drawn
-      // or a marker mid scale.
-      const lengths = routes.map((path) => path.getTotalLength());
-      routes.forEach((path, index) => {
-        const length = lengths[index] ?? 0;
-        gsap.set(path, {
-          strokeDasharray: length,
-          strokeDashoffset: length,
-        });
-      });
-      gsap.set(markers, { scale: 0.6, willChange: "transform" });
-      gsap.set(outgoing, { opacity: 0 });
-
-      const tl = gsap.timeline();
-      timelineRef.current = tl;
-
-      tl.to(outgoing, { opacity: 0, duration: 0.24, ease: "power1.inOut" }, 0);
-      tl.fromTo(
-        incoming,
-        { opacity: 0 },
-        { opacity: 1, duration: 0.24, ease: "power1.inOut" },
-        0.24,
-      );
-
-      tl.to(
-        routes,
-        {
-          strokeDashoffset: 0,
-          duration: 0.9,
-          ease: EASE_OUT_EXPO,
-          stagger: 0.04,
-        },
-        0.3,
-      );
-
-      tl.to(
-        markers,
-        {
-          scale: 1,
-          duration: 0.4,
-          ease: EASE_OUT_EXPO,
-          stagger: 0.04,
-          onComplete: () => {
-            gsap.set(markers, { willChange: "auto" });
-          },
-        },
-        0.3,
-      );
-
-      // One ghost pulse per marker, on its own arrival. Nothing repeats.
-      markers.forEach((marker, index) => {
-        const dot = marker.querySelector<SVGCircleElement>("[data-dot]");
-        if (!dot || !ghostLayer) return;
-        const r = Number(dot.getAttribute("r"));
-        tl.call(
-          () => {
-            const ghost = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            ghost.setAttribute("cx", dot.getAttribute("cx")!);
-            ghost.setAttribute("cy", dot.getAttribute("cy")!);
-            ghost.setAttribute("r", String(r));
-            ghost.setAttribute("fill", dot.getAttribute("fill")!);
-            ghostLayer.appendChild(ghost);
-            gsap.to(ghost, {
-              attr: { r: r * 1.9 },
-              opacity: 0,
-              duration: 0.7,
-              ease: "power2.out",
-              onComplete: () => ghost.remove(),
-            });
-          },
-          [],
-          0.3 + index * 0.04,
-        );
-      });
-    }, root);
+    void build();
 
     return () => {
-      timelineRef.current?.kill();
-      timelineRef.current = null;
-      // Ghost pulses are created inside timeline callbacks, so they live
-      // outside the context and must be cleared by hand.
-      if (ghostLayer) {
-        gsap.killTweensOf(Array.from(ghostLayer.children));
-        ghostLayer.replaceChildren();
-      }
-      ctx.revert();
+      disposed = true;
+      map?.remove();
     };
   }, [tab]);
 
   return (
     <div
-      ref={figureRef}
-      className="relative aspect-[1000/420] w-full overflow-hidden rounded-[var(--radius-card)] bg-[var(--tile-dark-2)]"
-    >
-      <Chart tab="domestik" active={tab === "domestik"} />
-      <Chart tab="internasional" active={tab === "internasional"} />
-    </div>
+      ref={containerRef}
+      role="img"
+      aria-label={`Peta jaringan ${coverage[tab].label} secara umum, bukan daftar lengkap rute`}
+      className="coverage-map aspect-[4/3] w-full overflow-hidden rounded-[var(--radius-card)] bg-white md:aspect-[1000/420]"
+    />
   );
 }

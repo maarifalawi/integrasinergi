@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, X } from "@phosphor-icons/react";
 import { z } from "@/lib/z";
-import { contacts, office, whatsapp } from "@/data/contacts";
+import { contacts, office } from "@/data/contacts";
 
 export type NavLink = { label: string; to: string };
 
@@ -31,7 +31,7 @@ export function MobileSheet({
 
   if (!open) return null;
 
-  const hotline = contacts[2]!;
+  const hotline = contacts[0]!;
 
   return (
     <div
@@ -39,10 +39,11 @@ export function MobileSheet({
       role="dialog"
       aria-modal="true"
       aria-label="Menu navigasi"
-      className="bg-nav fixed inset-0 flex flex-col pt-[env(safe-area-inset-top)] lg:hidden"
+      className="bg-nav fixed inset-0 flex flex-col lg:hidden"
       style={{ zIndex: z.mobileSheet }}
     >
-      <div className="flex h-12 items-center justify-between px-6">
+      <div aria-hidden className="h-[env(safe-area-inset-top)] shrink-0" />
+      <div className="flex h-14 shrink-0 items-center justify-between px-6">
         <span className="text-foreground-on-dark text-[19px] font-semibold tracking-[-0.04em]">
           ISLI
         </span>
@@ -50,7 +51,7 @@ export function MobileSheet({
           type="button"
           onClick={onClose}
           aria-label="Tutup menu"
-          className="text-foreground-on-dark -mr-3 flex h-11 w-11 items-center justify-center"
+          className="text-foreground-on-dark flex h-11 w-11 items-center justify-center"
         >
           <X size={20} />
         </button>
@@ -81,7 +82,7 @@ export function MobileSheet({
           }}
           className="text-muted-foreground-on-dark flex min-h-[52px] w-fit items-center text-[1.0625rem] leading-[1.47] tracking-[-0.022em] transition-colors duration-150 active:text-white/60"
         >
-          Login
+          Login Internal
         </button>
       </nav>
 
@@ -97,15 +98,12 @@ export function MobileSheet({
         </Link>
         <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-2">
           <a
-            href={whatsapp.href}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={`mailto:${hotline.email}`}
             className="text-foreground-on-dark flex min-h-[44px] items-center text-[0.9375rem] leading-[1.43] tracking-[-0.016em]"
-          >
-            WhatsApp
-          </a>
+            children="Email"
+          />
           <a
-            href={`tel:${hotline.phone.replace(/\s/g, "")}`}
+            href={`tel:${hotline.phone.replace(/[\s-]/g, "")}`}
             className="text-muted-foreground-on-dark flex min-h-[44px] items-center font-mono text-[0.8125rem] tracking-[0.02em] tabular-nums"
           >
             {hotline.phone}

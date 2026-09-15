@@ -22,9 +22,8 @@ const milestones: { year: string; title: string; description: string }[] = [
   },
   {
     year: "KINI",
-    title: "Lima lini, satu meja",
-    description:
-      "Sea freight, air freight, domestic forwarding, project cargo, dan trucking, dikoordinasikan satu tim commercial.",
+    title: "Tiga lini, satu meja",
+    description: "Sea freight, air freight, dan inland, dikoordinasikan satu tim commercial.",
   },
 ];
 
@@ -34,7 +33,7 @@ export function Timeline() {
   const reduce = useReducedMotion();
 
   return (
-    <section className="bg-parchment px-6 py-16 md:px-10 md:py-[7.5rem]">
+    <section className="bg-background px-6 py-16 md:px-10 md:py-[7.5rem]">
       <div className="mx-auto max-w-[1200px]">
         <div className="max-w-[692px]">
           <LineReveal

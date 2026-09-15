@@ -1,31 +1,23 @@
 export const serviceScopes: Record<string, string[]> = {
   "sea-freight": [
-    "Ekspor dan impor FCL",
-    "Konsolidasi LCL",
+    "Ekspor, impor, dan domestik",
+    "FCL (Full Container Load)",
+    "LCL (Less than Container Load)",
     "Alokasi ruang dari pelayaran mitra",
     "Dokumen ekspor dan impor",
   ],
   "air-freight": [
+    "Ekspor, impor, dan domestik",
     "Kargo umum dan kargo prioritas",
     "Penanganan di bandara asal",
     "Dokumen dan kepabeanan",
     "Pengiriman lanjutan ke gudang tujuan",
   ],
-  "domestic-forwarding": [
-    "Distribusi antar pulau",
-    "Kontainer SOC",
-    "Penjadwalan lepas dari alokasi liner",
-    "Koordinasi depo dan pelabuhan",
-  ],
-  "project-cargo": [
-    "Muatan berdimensi khusus",
-    "Survei rute",
-    "Perizinan jalan dan pelabuhan",
-    "Pengawasan bongkar muat",
-  ],
-  transportation: [
+  inland: [
+    "Distribusi domestik antar kota dan antar pulau",
     "Trucking pelabuhan ke gudang",
     "Trucking gudang ke pelabuhan",
+    "First-mile dan last-mile ekspor-impor",
     "Penjadwalan mengikuti closing time",
     "Pengembalian kontainer kosong ke depo",
   ],

@@ -1,6 +1,6 @@
 import { motion, useReducedMotion } from "motion/react";
 import { LineReveal } from "@/components/motion/LineReveal";
-import { contacts, whatsapp } from "@/data/contacts";
+import { contacts } from "@/data/contacts";
 import { headingLines } from "@/data/headings";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -8,12 +8,6 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 // Fast lanes for visitors who do not need the form. Values come straight from
 // data/contacts.ts so they can never drift from the real numbers.
 const channels: { label: string; value: string; href: string; hint: string }[] = [
-  {
-    label: "WHATSAPP",
-    value: contacts[2]!.phone,
-    href: whatsapp.href,
-    hint: "Respons tercepat untuk kargo mendesak.",
-  },
   {
     label: "EMAIL",
     value: contacts[0]!.email,
@@ -23,8 +17,8 @@ const channels: { label: string; value: string; href: string; hint: string }[] =
   {
     label: "TELEPON",
     value: contacts[0]!.phone,
-    href: `tel:${contacts[0]!.phone.replace(/\s/g, "")}`,
-    hint: "Langsung ke tim commercial.",
+    href: `tel:${contacts[0]!.phone.replace(/[\s-]/g, "")}`,
+    hint: "Telepon kantor, langsung ke tim commercial.",
   },
 ];
 
@@ -70,7 +64,7 @@ export function ContactHero() {
 
         {/* Quick channels: some visitors never want a form. */}
         <motion.div className="border-border mt-12 border-t pt-10 md:mt-20" {...up(0.65)}>
-          <ul className="grid gap-x-12 gap-y-10 sm:grid-cols-3">
+          <ul className="grid gap-x-12 gap-y-10 sm:grid-cols-2">
             {channels.map((channel) => (
               <li key={channel.label}>
                 <p className="text-muted-foreground font-mono text-[11px] tracking-[0.14em] uppercase">
@@ -78,9 +72,6 @@ export function ContactHero() {
                 </p>
                 <a
                   href={channel.href}
-                  {...(channel.label === "WHATSAPP"
-                    ? { target: "_blank", rel: "noopener noreferrer" }
-                    : {})}
                   className="text-foreground hover:text-primary mt-3 inline-flex min-h-[44px] items-center text-[1.25rem] leading-[1.24] font-semibold tracking-[-0.022em] transition-colors duration-200"
                 >
                   {channel.value}

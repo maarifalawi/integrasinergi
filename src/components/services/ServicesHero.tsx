@@ -68,9 +68,9 @@ export function ServicesHero() {
           {...up(0.9)}
         >
           <p className="text-muted-foreground font-mono text-[11px] tracking-[0.14em] uppercase">
-            Lima Lini Layanan
+            Tiga Lini Layanan
           </p>
-          <ul className="mt-8 grid gap-x-12 gap-y-8 sm:grid-cols-2 lg:grid-cols-5">
+          <ul className="mt-8 grid gap-x-12 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((service, index) => (
               <li key={service.slug}>
                 <Link to="/layanan" hash={service.slug} className="group block">

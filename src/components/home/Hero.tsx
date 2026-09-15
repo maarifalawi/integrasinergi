@@ -210,7 +210,7 @@ export function Hero() {
         <Parallax className="h-full w-full" range={6}>
           <SlowScale className="h-full w-full">
             <img
-              src="/img/hero-container-yard.jpg"
+              src="/img/POTO1.jpg"
               width={1584}
               height={672}
               alt="Terminal kontainer dilihat dari udara, deretan kontainer tersusun sampai ke dermaga"

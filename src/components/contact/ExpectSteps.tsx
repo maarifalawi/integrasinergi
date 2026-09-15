@@ -16,7 +16,7 @@ const steps: { title: string; body: string }[] = [
   },
   {
     title: "Penawaran kembali",
-    body: "Pada hari kerja yang sama, penawaran sampai di WhatsApp atau email Anda.",
+    body: "Pada hari kerja yang sama, penawaran sampai di email Anda.",
   },
 ];
 

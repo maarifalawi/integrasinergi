@@ -7,9 +7,6 @@
   --primary-foreground: #ffffff;
   --primary-focus: #0071e3; /* keyboard focus ring only */
   --primary-on-dark: #2997ff; /* links and route strokes on dark tiles only */
-  --whatsapp: oklch(0.67 0.19 149);
-  --whatsapp-deep: oklch(0.54 0.17 149);
-  --whatsapp-foreground: oklch(1 0 0);
 
   /* TEXT */
   --foreground: #1d1d1f;
@@ -50,9 +47,6 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-focus: var(--primary-focus);
   --color-primary-on-dark: var(--primary-on-dark);
-  --color-whatsapp: var(--whatsapp);
-  --color-whatsapp-deep: var(--whatsapp-deep);
-  --color-whatsapp-foreground: var(--whatsapp-foreground);
 
   --color-foreground: var(--foreground);
   --color-muted-foreground: var(--muted-foreground);
@@ -87,6 +81,7 @@
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
     text-rendering: optimizeLegibility;
   }
   body {
@@ -101,5 +96,46 @@
   :focus-visible {
     outline: 2px solid var(--primary-focus);
     outline-offset: 2px;
+  }
+}
+
+/* Only the Leaflet map uses a clean light treatment; its surrounding coverage
+   section intentionally keeps the existing dark theme. */
+@layer base {
+  .coverage-map.leaflet-container {
+    background: #ffffff;
+    font: inherit;
+    outline: none;
+  }
+  .coverage-map .leaflet-control-attribution {
+    background: rgb(255 255 255 / 0.82);
+    color: rgb(29 29 31 / 0.48);
+    font-size: 9px;
+    padding: 1px 5px;
+    transition:
+      color 200ms ease,
+      background-color 200ms ease;
+  }
+  .coverage-map .leaflet-control-attribution a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .coverage-map .leaflet-control-attribution:hover {
+    background: rgb(255 255 255 / 0.96);
+    color: rgb(29 29 31 / 0.72);
+  }
+  .coverage-map .leaflet-tooltip {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.1);
+    color: var(--foreground);
+    font-family: inherit;
+    font-size: 12px;
+    letter-spacing: -0.01em;
+    padding: 4px 10px;
+  }
+  .coverage-map .leaflet-tooltip-top::before {
+    border-top-color: var(--border);
   }
 }

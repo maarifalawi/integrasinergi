@@ -46,7 +46,7 @@ export function OfficeSection() {
                   </div>
                   <div className="mt-4 flex flex-wrap items-baseline gap-x-8 gap-y-1">
                     <a
-                      href={`tel:${contact.phone.replace(/\s/g, "")}`}
+                      href={`tel:${contact.phone.replace(/[\s-]/g, "")}`}
                       className="text-foreground-on-dark hover:text-[var(--primary-on-dark)] font-mono text-[0.9375rem] tracking-[0.02em] tabular-nums transition-colors duration-200"
                     >
                       {contact.phone}

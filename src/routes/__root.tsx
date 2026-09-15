@@ -15,7 +15,6 @@ import appCss from "../styles.css?url";
 import { SkipLink } from "@/components/layout/SkipLink";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
-import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { SmoothScrollProvider } from "@/components/motion/SmoothScrollProvider";
 
@@ -127,7 +126,6 @@ function RootComponent() {
           </PageTransition>
         </main>
         <Footer />
-        <WhatsAppButton />
       </SmoothScrollProvider>
     </QueryClientProvider>
   );

@@ -197,7 +197,7 @@ function ScrollLinked() {
   );
 }
 
-// The five services now travel sideways with the page scroll on lg+; below lg
+// The three services now travel sideways with the page scroll on lg+; below lg
 // the same cards sit in a swipeable snap strip.
 export function ServiceGrid() {
   return (

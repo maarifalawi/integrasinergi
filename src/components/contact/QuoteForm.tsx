@@ -4,33 +4,18 @@ import { Reveal } from "@/components/motion/Reveal";
 import { Card } from "@/components/ui/Card";
 import { ContactList } from "./ContactList";
 
-const WHATSAPP = "6285282691388";
 const EMAIL = "svetlana@integrafreight.com";
 
-const serviceOptions = [
-  "Sea Freight",
-  "Air Freight",
-  "Domestic Forwarding",
-  "Project Cargo",
-  "Transportation",
-];
+const serviceOptions = ["Sea Freight", "Air Freight", "Inland"];
 
 type FieldName =
-  | "nama"
-  | "perusahaan"
-  | "email"
-  | "whatsapp"
-  | "layanan"
-  | "asal"
-  | "tujuan"
-  | "volume"
-  | "detail";
+  "nama" | "perusahaan" | "email" | "telepon" | "layanan" | "asal" | "tujuan" | "volume" | "detail";
 
 const labels: Record<FieldName, string> = {
   nama: "Nama Lengkap",
   perusahaan: "Perusahaan",
   email: "Email",
-  whatsapp: "Nomor WhatsApp",
+  telepon: "Nomor Telepon",
   layanan: "Jenis Layanan",
   asal: "Pelabuhan atau Kota Asal",
   tujuan: "Pelabuhan atau Kota Tujuan",
@@ -42,7 +27,7 @@ const order: FieldName[] = [
   "nama",
   "perusahaan",
   "email",
-  "whatsapp",
+  "telepon",
   "layanan",
   "asal",
   "tujuan",
@@ -54,7 +39,7 @@ const required: FieldName[] = [
   "nama",
   "perusahaan",
   "email",
-  "whatsapp",
+  "telepon",
   "layanan",
   "asal",
   "tujuan",
@@ -64,7 +49,7 @@ const empty: Record<FieldName, string> = {
   nama: "",
   perusahaan: "",
   email: "",
-  whatsapp: "",
+  telepon: "",
   layanan: "",
   asal: "",
   tujuan: "",
@@ -82,8 +67,6 @@ const errorClass =
 // components/ui/Button.tsx renders a router Link and is locked.
 const submitClass =
   "bg-primary text-primary-foreground inline-flex min-h-[44px] w-full items-center justify-center rounded-full px-[22px] py-[11px] text-[17px] transition-[transform,background-color,box-shadow] duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-primary/90 hover:-translate-y-[1px] active:translate-y-0 active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/40 focus-visible:ring-offset-2 disabled:opacity-60 disabled:hover:translate-y-0";
-const secondaryClass =
-  "border-border text-foreground inline-flex min-h-[44px] items-center justify-center rounded-full border px-[22px] py-[11px] text-[17px] transition-[transform,background-color,border-color] duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-foreground/30 hover:bg-foreground/[0.04] active:scale-[0.96]";
 
 function buildBody(values: Record<FieldName, string>) {
   const lines = order
@@ -110,8 +93,8 @@ export function QuoteForm() {
     if (!next.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim())) {
       next.email = "Masukkan alamat email yang valid.";
     }
-    if (!next.whatsapp && values.whatsapp.replace(/[^0-9]/g, "").length < 9) {
-      next.whatsapp = "Masukkan nomor WhatsApp yang valid.";
+    if (!next.telepon && values.telepon.replace(/[^0-9]/g, "").length < 9) {
+      next.telepon = "Masukkan nomor telepon yang valid.";
     }
     return next;
   };
@@ -126,8 +109,7 @@ export function QuoteForm() {
       return;
     }
     setLoading(true);
-    const body = buildBody(values);
-    window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(body)}`, "_blank", "noopener");
+    window.location.href = mailtoHref();
     setLoading(false);
     setSent(true);
   };
@@ -184,14 +166,9 @@ export function QuoteForm() {
                     Permintaan Anda siap dikirim.
                   </h3>
                   <p className="text-muted-foreground mt-4 max-w-[520px] text-[1.0625rem] leading-[1.47] tracking-[-0.022em]">
-                    WhatsApp terbuka di tab baru dengan detail kargo Anda. Tekan kirim untuk
-                    meneruskan ke tim commercial.
+                    Aplikasi email Anda terbuka dengan detail kargo yang sudah tersusun. Tekan kirim
+                    untuk meneruskan ke tim commercial.
                   </p>
-                  <div className="mt-8">
-                    <a href={mailtoHref()} className={secondaryClass}>
-                      Kirim lewat Email
-                    </a>
-                  </div>
                   <div className="mt-6">
                     <button
                       type="button"
@@ -247,15 +224,15 @@ export function QuoteForm() {
                         {errorFor("email")}
                       </div>
                       <div>
-                        <label htmlFor="q-whatsapp" className={labelClass}>
-                          {labels.whatsapp}
+                        <label htmlFor="q-telepon" className={labelClass}>
+                          {labels.telepon}
                         </label>
                         <input
                           type="tel"
-                          {...field("whatsapp")}
-                          onChange={(e) => set("whatsapp", e.target.value)}
+                          {...field("telepon")}
+                          onChange={(e) => set("telepon", e.target.value)}
                         />
-                        {errorFor("whatsapp")}
+                        {errorFor("telepon")}
                       </div>
                     </div>
 

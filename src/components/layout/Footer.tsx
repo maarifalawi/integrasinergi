@@ -77,7 +77,7 @@ export function Footer() {
                   {contact.role}
                 </p>
                 <a
-                  href={`tel:${contact.phone.replace(/\s/g, "")}`}
+                  href={`tel:${contact.phone.replace(/[\s-]/g, "")}`}
                   className="text-muted-foreground font-mono text-[0.8125rem] tracking-[0.02em] tabular-nums transition-colors duration-150 hover:text-foreground"
                 >
                   {contact.phone}
